@@ -2,9 +2,9 @@ public enum HealthMetricType {
     WATER_INTAKE("Water Intake", "ml"),
     SLEEP_DURATION("Sleep Duration", "hours"),
     EXERCISE_DURATION("Exercise Duration", "minutes"),
-    CALORIES("Calories", "kcal"),
+    CALORIES_CONSUMED("Calories", "kcal"),
     WEIGHT("Weight", "kg"),
-    STEPS("Steps", "count");
+    STEPS_TAKEN("Steps", "count");
 
     private final String displayName;
     private final String unit;
