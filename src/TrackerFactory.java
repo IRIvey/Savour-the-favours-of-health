@@ -12,9 +12,9 @@ public class TrackerFactory {
             case WATER_INTAKE -> new WaterTracker();
             case SLEEP_DURATION -> new SleepTracker();
             case EXERCISE_DURATION -> new ExerciseTracker();
-            case CALORIES -> new CalorieTracker();
+            case CALORIES_CONSUMED -> new CalorieTracker();
             case WEIGHT -> new WeightTracker();
-            case STEPS -> new StepTracker();
+            case STEPS_TAKEN -> new StepTracker();
         };
     }
 }
