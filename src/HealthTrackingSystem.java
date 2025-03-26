@@ -1,5 +1,6 @@
 import java.util.Scanner;
 
+
 public class HealthTrackingSystem {
     private static HealthTrackingSystem instance;
     private final CommandExecutor commandExecutor;
@@ -28,7 +29,7 @@ public class HealthTrackingSystem {
             scanner.nextLine();
 
             if (choice == 0) {
-                System.out.println("Thank you for using Health Tracking System!");
+                System.out.println("Thank you for using the Health Tracking System!");
                 break;
             }
 
