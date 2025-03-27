@@ -14,11 +14,24 @@ public class User {
 
     public void addHealthData(HealthData data) {
         healthHistory.add(data);
+        checkGoals(data);
     }
 
     public void addGoal(Goal goal) {
         goals.add(goal);
     }
+
+    private void checkGoals(HealthData data) {
+        for (Goal goal : goals) {
+            if (goal.getMetric().getName().equals(data.getMetric().getName())) {
+                goal.checkIfAchieved(data.getValue()); // Now correctly updates goal status
+                if (goal.isAchieved()) {
+                    System.out.println("🎉 Goal achieved for " + goal.getMetric().getName() + "!");
+                }
+            }
+        }
+    }
+
 
     public List<HealthData> getHealthHistory() {
         return new ArrayList<>(healthHistory);
