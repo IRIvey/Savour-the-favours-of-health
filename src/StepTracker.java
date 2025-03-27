@@ -32,20 +32,34 @@ public class StepTracker implements Tracker {
 
     @Override
     public void checkGoals(User user) {
-        double totalCalories = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof CalorieMetric)
+        double totalSteps = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof StepMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
 
-        for (Goal goal : user.getGoals()) {
-            if (goal.getMetric() instanceof CalorieMetric) {
-                goal.checkIfAchieved(totalCalories);
+        String notes = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof StepMetric)
+                .map(HealthData::getNotes)
+                .findFirst()
+                .orElse("No notes provided");
 
+        for (Goal goal : user.getGoals()) {
+            if (goal.getMetric() instanceof StepMetric) {
+                double goalValue = goal.getTargetValue();
+                goal.checkIfAchieved(totalSteps);
+                System.out.println("\n📊 Steps Goal Progress:");
+                System.out.println("➡ Goal: " + goalValue + " steps");
+                System.out.println("➡ Recorded: " + totalSteps + " steps");
                 if (goal.isAchieved()) {
-                    System.out.println("🎯 You reached your calorie goal of " + goal.getTargetValue() + " kcal!");
+                    System.out.println("✅ Goal Achieved! 🎉 Keep stepping!");
+                } else {
+                    double difference = goalValue - totalSteps;
+                    System.out.println("❌ Goal Not Achieved. You need " + difference + " more steps.");
                 }
+                System.out.println("📝 Notes: " + notes);
             }
         }
     }
+
 
 }

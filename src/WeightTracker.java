@@ -33,21 +33,35 @@ public class WeightTracker implements Tracker {
 
     @Override
     public void checkGoals(User user) {
-        double totalCalories = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof CalorieMetric)
+        double totalWeight = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof WeightMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
 
-        for (Goal goal : user.getGoals()) {
-            if (goal.getMetric() instanceof CalorieMetric) {
-                goal.checkIfAchieved(totalCalories);
+        String notes = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof WeightMetric)
+                .map(HealthData::getNotes)
+                .findFirst()
+                .orElse("No notes provided");
 
+        for (Goal goal : user.getGoals()) {
+            if (goal.getMetric() instanceof WeightMetric) {
+                double goalValue = goal.getTargetValue();
+                goal.checkIfAchieved(totalWeight);
+                System.out.println("\n📊 Weight Goal Progress:");
+                System.out.println("➡ Goal: " + goalValue + " kg");
+                System.out.println("➡ Recorded: " + totalWeight + " kg");
                 if (goal.isAchieved()) {
-                    System.out.println("🎯 You reached your calorie goal of " + goal.getTargetValue() + " kcal!");
+                    System.out.println("✅ Goal Achieved! 🎉 Keep up the great work!");
+                } else {
+                    double difference = goalValue - totalWeight;
+                    System.out.println("❌ Goal Not Achieved. You need to lose/gain " + difference + " kg.");
                 }
+                System.out.println("📝 Notes: " + notes);
             }
         }
     }
-
 }
+
+
 
