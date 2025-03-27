@@ -32,20 +32,35 @@ public class WaterTracker implements Tracker {
 
     @Override
     public void checkGoals(User user) {
-        double totalCalories = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof CalorieMetric)
+        double totalWater = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof WaterIntakeMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
 
-        for (Goal goal : user.getGoals()) {
-            if (goal.getMetric() instanceof CalorieMetric) {
-                goal.checkIfAchieved(totalCalories);
+        String notes = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof WaterIntakeMetric)
+                .map(HealthData::getNotes)
+                .findFirst()
+                .orElse("No notes provided");
 
+        for (Goal goal : user.getGoals()) {
+            if (goal.getMetric() instanceof WaterIntakeMetric) {
+                double goalValue = goal.getTargetValue();
+                goal.checkIfAchieved(totalWater);
+                System.out.println("\n📊 Water Intake Goal Progress:");
+                System.out.println("➡ Goal: " + goalValue + " liters");
+                System.out.println("➡ Recorded: " + totalWater + " liters");
                 if (goal.isAchieved()) {
-                    System.out.println("🎯 You reached your calorie goal of " + goal.getTargetValue() + " kcal!");
+                    System.out.println("✅ Goal Achieved! 🎉 Well hydrated!");
+                } else {
+                    double difference = goalValue - totalWater;
+                    System.out.println("❌ Goal Not Achieved. You need " + difference + " more liters.");
                 }
+
+                System.out.println("📝 Notes: " + notes);
             }
         }
     }
+
 
 }

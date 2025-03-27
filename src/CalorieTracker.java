@@ -39,15 +39,29 @@ public class CalorieTracker implements Tracker {
                 .mapToDouble(HealthData::getValue)
                 .sum();
 
+        String notes = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof CalorieMetric)
+                .map(HealthData::getNotes)
+                .findFirst()
+                .orElse("No notes provided");
+
         for (Goal goal : user.getGoals()) {
             if (goal.getMetric() instanceof CalorieMetric) {
+                double goalValue = goal.getTargetValue();
                 goal.checkIfAchieved(totalCalories);
-
+                System.out.println("\n📊 Calorie Goal Progress:");
+                System.out.println("➡ Goal: " + goalValue + " kcal");
+                System.out.println("➡ Recorded: " + totalCalories + " kcal");
                 if (goal.isAchieved()) {
-                    System.out.println("🎯 You reached your calorie goal of " + goal.getTargetValue() + " kcal!");
+                    System.out.println("✅ Goal Achieved! 🎉 Well balanced!");
+                } else {
+                    double difference = goalValue - totalCalories;
+                    System.out.println("❌ Goal Not Achieved. You need " + difference + " more kcal.");
                 }
+                System.out.println("📝 Notes: " + notes);
             }
         }
     }
+
 }
 
