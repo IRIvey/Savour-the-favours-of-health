@@ -32,19 +32,21 @@ public class ExerciseTracker implements Tracker {
 
     @Override
     public void checkGoals(User user) {
-        user.getGoals().stream()
-                .filter(goal -> goal.getMetric() instanceof ExerciseDurationMetric)
-                .forEach(goal -> {
-                    double totalExercise = user.getHealthHistory().stream()
-                            .filter(data -> data.getMetric() instanceof ExerciseDurationMetric)
-                            .mapToDouble(HealthData::getValue)
-                            .sum();
+        double totalCalories = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof CalorieMetric)
+                .mapToDouble(HealthData::getValue)
+                .sum();
 
-                    if (totalExercise >= goal.getTargetValue() && !goal.isAchieved()) {
-                        goal.setAchieved(true);
-                        System.out.println("🎉 Keep it up! You've achieved your exercise goal!");
-                    }
-                });
+        for (Goal goal : user.getGoals()) {
+            if (goal.getMetric() instanceof CalorieMetric) {
+                goal.checkIfAchieved(totalCalories);
+
+                if (goal.isAchieved()) {
+                    System.out.println("🎯 You reached your calorie goal of " + goal.getTargetValue() + " kcal!");
+                }
+            }
+        }
     }
+
 }
 

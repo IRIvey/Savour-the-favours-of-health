@@ -26,27 +26,28 @@ public class WeightTracker implements Tracker {
         double latestWeight = user.getHealthHistory().stream()
                 .filter(data -> data.getMetric() instanceof WeightMetric)
                 .mapToDouble(HealthData::getValue)
-                .reduce((first, second) -> second) // Get the latest weight entry
+                .reduce((first, second) -> second)
                 .orElse(0);
         System.out.println("Latest recorded weight: " + latestWeight + " kg");
     }
 
     @Override
     public void checkGoals(User user) {
-        user.getGoals().stream()
-                .filter(goal -> goal.getMetric() instanceof WeightMetric)
-                .forEach(goal -> {
-                    double latestWeight = user.getHealthHistory().stream()
-                            .filter(data -> data.getMetric() instanceof WeightMetric)
-                            .mapToDouble(HealthData::getValue)
-                            .reduce((first, second) -> second)
-                            .orElse(0);
+        double totalCalories = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof CalorieMetric)
+                .mapToDouble(HealthData::getValue)
+                .sum();
 
-                    if (latestWeight <= goal.getTargetValue() && !goal.isAchieved()) {
-                        goal.setAchieved(true);
-                        System.out.println("🎉 Great work! You've reached your weight goal!");
-                    }
-                });
+        for (Goal goal : user.getGoals()) {
+            if (goal.getMetric() instanceof CalorieMetric) {
+                goal.checkIfAchieved(totalCalories);
+
+                if (goal.isAchieved()) {
+                    System.out.println("🎯 You reached your calorie goal of " + goal.getTargetValue() + " kcal!");
+                }
+            }
+        }
     }
+
 }
 
