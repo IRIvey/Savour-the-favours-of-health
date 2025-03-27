@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-class ExerciseTracker implements Tracker {
+public class ExerciseTracker implements Tracker {
     private final Scanner scanner = new Scanner(System.in);
 
     @Override
@@ -13,7 +13,7 @@ class ExerciseTracker implements Tracker {
         System.out.print("Any notes? ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(HealthMetricType.EXERCISE_DURATION, minutes, notes);
+        HealthData data = new HealthData(new ExerciseDurationMetric(), minutes, notes);
         user.addHealthData(data);
 
         checkGoals(user);
@@ -24,7 +24,7 @@ class ExerciseTracker implements Tracker {
     public void displayStats(User user) {
         System.out.println("\nExercise Statistics:");
         double totalExercise = user.getHealthHistory().stream()
-                .filter(data -> data.getType() == HealthMetricType.EXERCISE_DURATION)
+                .filter(data -> data.getMetric() instanceof ExerciseDurationMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
         System.out.println("Total exercise time: " + totalExercise + " minutes");
@@ -33,16 +33,16 @@ class ExerciseTracker implements Tracker {
     @Override
     public void checkGoals(User user) {
         user.getGoals().stream()
-                .filter(goal -> goal.getMetricType() == HealthMetricType.EXERCISE_DURATION)
+                .filter(goal -> goal.getMetric() instanceof ExerciseDurationMetric)
                 .forEach(goal -> {
                     double totalExercise = user.getHealthHistory().stream()
-                            .filter(data -> data.getType() == HealthMetricType.EXERCISE_DURATION)
+                            .filter(data -> data.getMetric() instanceof ExerciseDurationMetric)
                             .mapToDouble(HealthData::getValue)
                             .sum();
 
                     if (totalExercise >= goal.getTargetValue() && !goal.isAchieved()) {
                         goal.setAchieved(true);
-                        System.out.println("🎉 Congratulations! You've achieved your exercise goal!");
+                        System.out.println("🎉 Keep it up! You've achieved your exercise goal!");
                     }
                 });
     }

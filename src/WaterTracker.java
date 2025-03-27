@@ -13,7 +13,7 @@ public class WaterTracker implements Tracker {
         System.out.print("Any notes? ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(HealthMetricType.WATER_INTAKE, amount, notes);
+        HealthData data = new HealthData(new WaterIntakeMetric(), amount, notes);
         user.addHealthData(data);
 
         checkGoals(user);
@@ -24,7 +24,7 @@ public class WaterTracker implements Tracker {
     public void displayStats(User user) {
         System.out.println("\nWater Intake Statistics:");
         double totalIntake = user.getHealthHistory().stream()
-                .filter(data -> data.getType() == HealthMetricType.WATER_INTAKE)
+                .filter(data -> data.getMetric() instanceof WaterIntakeMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
         System.out.println("Total intake today: " + totalIntake + " ml");
@@ -33,10 +33,10 @@ public class WaterTracker implements Tracker {
     @Override
     public void checkGoals(User user) {
         user.getGoals().stream()
-                .filter(goal -> goal.getMetricType() == HealthMetricType.WATER_INTAKE)
+                .filter(goal -> goal.getMetric() instanceof WaterIntakeMetric)
                 .forEach(goal -> {
                     double totalIntake = user.getHealthHistory().stream()
-                            .filter(data -> data.getType() == HealthMetricType.WATER_INTAKE)
+                            .filter(data -> data.getMetric() instanceof WaterIntakeMetric)
                             .mapToDouble(HealthData::getValue)
                             .sum();
 

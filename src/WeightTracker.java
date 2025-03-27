@@ -6,14 +6,14 @@ public class WeightTracker implements Tracker {
     @Override
     public void track(User user) {
         System.out.println("\n=== Weight Tracking ===");
-        System.out.print("Enter your weight (kg): ");
+        System.out.print("Enter your current weight (kg): ");
         double weight = scanner.nextDouble();
         scanner.nextLine();
 
         System.out.print("Any notes? ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(HealthMetricType.WEIGHT, weight, notes);
+        HealthData data = new HealthData(new WeightMetric(), weight, notes);
         user.addHealthData(data);
 
         checkGoals(user);
@@ -22,31 +22,31 @@ public class WeightTracker implements Tracker {
 
     @Override
     public void displayStats(User user) {
-        System.out.println("\nWeight Tracking Statistics:");
-        user.getHealthHistory().stream()
-                .filter(data -> data.getType() == HealthMetricType.WEIGHT)
-                .reduce((first, second) -> second)
-                .ifPresentOrElse(
-                        latestData -> System.out.println("Latest recorded weight: " + latestData.getValue() + " kg"),
-                        () -> System.out.println("No weight data recorded yet.")
-                );
+        System.out.println("\nWeight Statistics:");
+        double latestWeight = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof WeightMetric)
+                .mapToDouble(HealthData::getValue)
+                .reduce((first, second) -> second) // Get the latest weight entry
+                .orElse(0);
+        System.out.println("Latest recorded weight: " + latestWeight + " kg");
     }
 
     @Override
     public void checkGoals(User user) {
         user.getGoals().stream()
-                .filter(goal -> goal.getMetricType() == HealthMetricType.WEIGHT)
+                .filter(goal -> goal.getMetric() instanceof WeightMetric)
                 .forEach(goal -> {
                     double latestWeight = user.getHealthHistory().stream()
-                            .filter(data -> data.getType() == HealthMetricType.WEIGHT)
+                            .filter(data -> data.getMetric() instanceof WeightMetric)
                             .mapToDouble(HealthData::getValue)
                             .reduce((first, second) -> second)
                             .orElse(0);
 
-                    if (latestWeight == goal.getTargetValue() && !goal.isAchieved()) {
+                    if (latestWeight <= goal.getTargetValue() && !goal.isAchieved()) {
                         goal.setAchieved(true);
-                        System.out.println("🎉 Congratulations! You've achieved your weight goal!");
+                        System.out.println("🎉 Great work! You've reached your weight goal!");
                     }
                 });
     }
 }
+

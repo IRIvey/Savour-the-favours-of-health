@@ -13,7 +13,7 @@ public class SleepTracker implements Tracker {
         System.out.print("Any notes? ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(HealthMetricType.SLEEP_DURATION, hours, notes);
+        HealthData data = new HealthData(new SleepDurationMetric(), hours, notes);
         user.addHealthData(data);
 
         checkGoals(user);
@@ -24,7 +24,7 @@ public class SleepTracker implements Tracker {
     public void displayStats(User user) {
         System.out.println("\nSleep Statistics:");
         double totalSleep = user.getHealthHistory().stream()
-                .filter(data -> data.getType() == HealthMetricType.SLEEP_DURATION)
+                .filter(data -> data.getMetric() instanceof SleepDurationMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
         System.out.println("Total sleep recorded: " + totalSleep + " hours");
@@ -33,16 +33,16 @@ public class SleepTracker implements Tracker {
     @Override
     public void checkGoals(User user) {
         user.getGoals().stream()
-                .filter(goal -> goal.getMetricType() == HealthMetricType.SLEEP_DURATION)
+                .filter(goal -> goal.getMetric() instanceof SleepDurationMetric)
                 .forEach(goal -> {
                     double totalSleep = user.getHealthHistory().stream()
-                            .filter(data -> data.getType() == HealthMetricType.SLEEP_DURATION)
+                            .filter(data -> data.getMetric() instanceof SleepDurationMetric)
                             .mapToDouble(HealthData::getValue)
                             .sum();
 
                     if (totalSleep >= goal.getTargetValue() && !goal.isAchieved()) {
                         goal.setAchieved(true);
-                        System.out.println("🎉 Congratulations! You've achieved your sleep goal!");
+                        System.out.println("🎉 Great job! You've reached your sleep goal!");
                     }
                 });
     }

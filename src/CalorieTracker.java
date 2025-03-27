@@ -6,14 +6,14 @@ public class CalorieTracker implements Tracker {
     @Override
     public void track(User user) {
         System.out.println("\n=== Calorie Tracking ===");
-        System.out.print("Enter calories consumed: ");
+        System.out.print("Enter calories consumed (kcal): ");
         double calories = scanner.nextDouble();
         scanner.nextLine();
 
         System.out.print("Any notes? ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(HealthMetricType.CALORIES_CONSUMED, calories, notes);
+        HealthData data = new HealthData(new CalorieMetric(), calories, notes);
         user.addHealthData(data);
 
         checkGoals(user);
@@ -22,27 +22,27 @@ public class CalorieTracker implements Tracker {
 
     @Override
     public void displayStats(User user) {
-        System.out.println("\nCalorie Intake Statistics:");
+        System.out.println("\nCalorie Statistics:");
         double totalCalories = user.getHealthHistory().stream()
-                .filter(data -> data.getType() == HealthMetricType.CALORIES_CONSUMED)
+                .filter(data -> data.getMetric() instanceof CalorieMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
-        System.out.println("Total calories consumed today: " + totalCalories + " kcal");
+        System.out.println("Total calories consumed: " + totalCalories + " kcal");
     }
 
     @Override
     public void checkGoals(User user) {
         user.getGoals().stream()
-                .filter(goal -> goal.getMetricType() == HealthMetricType.CALORIES_CONSUMED)
+                .filter(goal -> goal.getMetric() instanceof CalorieMetric)
                 .forEach(goal -> {
                     double totalCalories = user.getHealthHistory().stream()
-                            .filter(data -> data.getType() == HealthMetricType.CALORIES_CONSUMED)
+                            .filter(data -> data.getMetric() instanceof CalorieMetric)
                             .mapToDouble(HealthData::getValue)
                             .sum();
 
-                    if (totalCalories <= goal.getTargetValue() && !goal.isAchieved()) {
+                    if (totalCalories >= goal.getTargetValue() && !goal.isAchieved()) {
                         goal.setAchieved(true);
-                        System.out.println("🎉 Congratulations! You've achieved your calorie intake goal!");
+                        System.out.println("🎉 You've reached your calorie goal!");
                     }
                 });
     }
