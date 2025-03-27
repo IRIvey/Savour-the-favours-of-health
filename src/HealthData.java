@@ -1,20 +1,20 @@
 import java.time.LocalDateTime;
 
 public class HealthData {
-    private final HealthMetricType type;
+    private final HealthMetric metric;
     private final double value;
     private final LocalDateTime timestamp;
     private final String notes;
 
-    public HealthData(HealthMetricType type, double value, String notes) {
-        this.type = type;
+    public HealthData(HealthMetric metric, double value, String notes) {
+        this.metric = metric;
         this.value = value;
         this.timestamp = LocalDateTime.now();
         this.notes = notes;
     }
 
-    public HealthMetricType getType() {
-        return type;
+    public HealthMetric getMetric() {
+        return metric;
     }
 
     public double getValue() {

@@ -14,7 +14,7 @@ public class TrackerFactory {
         if (metric instanceof CalorieMetric) return new CalorieTracker();
         if (metric instanceof WeightMetric) return new WeightTracker();
         if (metric instanceof StepMetric) return new StepTracker();
-        throw new IllegalArgumentException("Unknown metric type: " + metric.getClass().getSimpleName());
+        throw new IllegalArgumentException("Unknown health metric: " + metric.getName());
     }
 }
 

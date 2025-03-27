@@ -1,26 +1,22 @@
 import java.util.Scanner;
 
-
-
 public class HealthTrackingSystem {
     private static HealthTrackingSystem instance;
     private final CommandExecutor commandExecutor;
     private final MenuDisplay menuDisplay;
     private final Scanner scanner;
     private final User currentUser;
-    private final UserInputHandler userInputHandler;
 
-    private HealthTrackingSystem(UserInputHandler userInputHandler, CommandExecutor commandExecutor, MenuDisplay menuDisplay) {
+    private HealthTrackingSystem() {
         this.currentUser = new User("DefaultUser");
-        this.commandExecutor = commandExecutor;
-        this.menuDisplay = menuDisplay;
+        this.commandExecutor = new CommandExecutor();
+        this.menuDisplay = new MenuDisplay();
         this.scanner = new Scanner(System.in);
-        this.userInputHandler = userInputHandler;
     }
 
     public static HealthTrackingSystem getInstance() {
         if (instance == null) {
-            instance = new HealthTrackingSystem(new UserInputHandler(), new CommandExecutor(), new MenuDisplay());
+            instance = new HealthTrackingSystem();
         }
         return instance;
     }
@@ -28,11 +24,14 @@ public class HealthTrackingSystem {
     public void start() {
         while (true) {
             menuDisplay.showMenu();
-            int choice = userInputHandler.getUserChoice();
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
             if (choice == 0) {
-                System.out.println("Thank you for using Health Tracking System!");
+                System.out.println("Thank you for using the Health Tracking System!");
                 break;
             }
+
             commandExecutor.executeCommand(choice, currentUser);
         }
     }

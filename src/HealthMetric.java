@@ -1,14 +1,14 @@
 public abstract class HealthMetric {
-    private final String displayName;
+    private final String name;
     private final String unit;
 
-    public HealthMetric(String displayName, String unit) {
-        this.displayName = displayName;
+    protected HealthMetric(String name, String unit) {
+        this.name = name;
         this.unit = unit;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getName() {
+        return name;
     }
 
     public String getUnit() {
