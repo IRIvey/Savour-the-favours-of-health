@@ -32,20 +32,38 @@ public class SleepTracker implements Tracker {
 
     @Override
     public void checkGoals(User user) {
-        double totalCalories = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof CalorieMetric)
+        double totalSleep = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof SleepDurationMetric)
                 .mapToDouble(HealthData::getValue)
                 .sum();
+        String notes = user.getHealthHistory().stream()
+                .filter(data -> data.getMetric() instanceof SleepDurationMetric)
+                .map(HealthData::getNotes)
+                .findFirst()
+                .orElse("No notes provided");
 
         for (Goal goal : user.getGoals()) {
-            if (goal.getMetric() instanceof CalorieMetric) {
-                goal.checkIfAchieved(totalCalories);
+            if (goal.getMetric() instanceof SleepDurationMetric) {
+                double goalValue = goal.getTargetValue();
+                goal.checkIfAchieved(totalSleep);
+
+                System.out.println("\n📊 Sleep Goal Progress:");
+                System.out.println("➡ Goal: " + goalValue + " hours (" + goal.getPeriod().getPeriodName() + ")");
+                System.out.println("➡ Recorded: " + totalSleep + " hours");
 
                 if (goal.isAchieved()) {
-                    System.out.println("🎯 You reached your calorie goal of " + goal.getTargetValue() + " kcal!");
+                    System.out.println("✅ Goal Achieved! 🎉 Great job!");
+                } else {
+                    double difference = goalValue - totalSleep;
+                    System.out.println("❌ Goal Not Achieved. You need " + difference + " more hours.");
                 }
+
+
+                System.out.println("📝 Notes: " + notes);
             }
         }
     }
 
 }
+
+
