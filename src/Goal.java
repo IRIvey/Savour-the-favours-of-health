@@ -1,11 +1,11 @@
 public class Goal {
-    private final HealthMetricType metricType;
+    private final HealthMetric metric;
     private final double targetValue;
     private final GoalPeriod period;
     private boolean achieved;
 
-    public Goal(HealthMetricType metricType, double targetValue, GoalPeriod period) {
-        this.metricType = metricType;
+    public Goal(HealthMetric metric, double targetValue, GoalPeriod period) {
+        this.metric = metric;
         this.targetValue = targetValue;
         this.period = period;
         this.achieved = false;
@@ -19,8 +19,8 @@ public class Goal {
         this.achieved = achieved;
     }
 
-    public HealthMetricType getMetricType() {
-        return metricType;
+    public HealthMetric getMetric() {
+        return metric;
     }
 
     public double getTargetValue() {
