@@ -1,24 +1,20 @@
-import java.util.Map;
-import java.util.HashMap;
-
 public class TrackerFactory {
     private static final TrackerFactory instance = new TrackerFactory();
-    private final Map<HealthMetricType, Tracker> trackerMap = new HashMap<>();
 
-    private TrackerFactory() {
-        trackerMap.put(HealthMetricType.WATER_INTAKE, new WaterTracker());
-        trackerMap.put(HealthMetricType.SLEEP_DURATION, new SleepTracker());
-        trackerMap.put(HealthMetricType.EXERCISE_DURATION, new ExerciseTracker());
-        trackerMap.put(HealthMetricType.CALORIES_CONSUMED, new CalorieTracker());
-        trackerMap.put(HealthMetricType.WEIGHT, new WeightTracker());
-        trackerMap.put(HealthMetricType.STEPS_TAKEN, new StepTracker());
-    }
+    private TrackerFactory() {}
 
     public static TrackerFactory getInstance() {
         return instance;
     }
 
-    public Tracker createTracker(HealthMetricType type) {
-        return trackerMap.get(type);
+    public Tracker createTracker(HealthMetric metric) {
+        if (metric instanceof WaterIntakeMetric) return new WaterTracker();
+        if (metric instanceof SleepDurationMetric) return new SleepTracker();
+        if (metric instanceof ExerciseDurationMetric) return new ExerciseTracker();
+        if (metric instanceof CalorieMetric) return new CalorieTracker();
+        if (metric instanceof WeightMetric) return new WeightTracker();
+        if (metric instanceof StepMetric) return new StepTracker();
+        throw new IllegalArgumentException("Unknown metric type: " + metric.getClass().getSimpleName());
     }
 }
+
