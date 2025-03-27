@@ -15,8 +15,10 @@ public class Goal {
         return achieved;
     }
 
-    public void setAchieved(boolean achieved) {
-        this.achieved = achieved;
+    public void checkIfAchieved(double totalValue) {
+        if (totalValue >= targetValue) {
+            achieved = true;
+        }
     }
 
     public HealthMetric getMetric() {
