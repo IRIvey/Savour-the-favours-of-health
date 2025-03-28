@@ -8,7 +8,6 @@ public class CommandExecutor {
     private final Scanner scanner = new Scanner(System.in);
 
     public CommandExecutor() {
-        // Mapping user input choices to corresponding HealthMetric objects
         metricMap.put(1, new WaterIntakeMetric());
         metricMap.put(2, new SleepDurationMetric());
         metricMap.put(3, new ExerciseDurationMetric());
