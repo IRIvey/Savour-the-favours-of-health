@@ -1,3 +1,5 @@
+import tracker.Tracker;
+
 import java.util.Scanner;
 
 public class WeightTracker implements Tracker {

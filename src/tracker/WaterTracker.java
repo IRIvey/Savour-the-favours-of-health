@@ -1,3 +1,5 @@
+package tracker;
+
 import java.util.Scanner;
 
 public class WaterTracker implements Tracker {

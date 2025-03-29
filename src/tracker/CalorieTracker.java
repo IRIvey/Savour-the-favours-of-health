@@ -1,3 +1,5 @@
+package tracker;
+
 import java.util.Scanner;
 
 public class CalorieTracker implements Tracker {

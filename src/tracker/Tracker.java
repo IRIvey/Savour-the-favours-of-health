@@ -1,3 +1,5 @@
+package tracker;
+
 public interface Tracker {
     void track(User user);
     void displayStats(User user);
