@@ -1,6 +1,6 @@
 public class Goal {
     private final HealthMetric metric;
-    private final double targetValue;
+    private double targetValue;
     private final GoalPeriod period;
     private boolean achieved;
 
@@ -19,6 +19,10 @@ public class Goal {
         if (totalValue >= targetValue) {
             achieved = true;
         }
+    }
+
+    public void updateTargetValue(double newTargetValue) {
+        this.targetValue = newTargetValue;
     }
 
     public HealthMetric getMetric() {
