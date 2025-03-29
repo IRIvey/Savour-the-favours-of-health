@@ -1,3 +1,5 @@
+package system;
+
 public class MenuDisplay {
     public void showMenu() {
         System.out.println("\n=== Health Tracking System ===");
