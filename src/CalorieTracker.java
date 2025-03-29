@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.List;
 
 public class CalorieTracker implements Tracker {
     private final HealthMetric metric = new CalorieMetric();
@@ -16,52 +17,41 @@ public class CalorieTracker implements Tracker {
         HealthData data = new HealthData(metric, calories, notes);
         user.addHealthData(data);
 
-        checkGoals(user); // 🔥 Now checks goals inside `CalorieTracker`
-
         System.out.println("✅ Calories logged: " + calories + " " + metric.getUnit());
     }
-
 
     @Override
     public void displayStats(User user) {
         System.out.println("\n📊 Calorie Intake History:");
-        for (HealthData data : user.getHealthHistory()) {
-            if (data.getMetric() instanceof CalorieMetric) {
-                System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() + " (" + data.getNotes() + ")");
-            }
+        List<HealthData> calorieHistory = user.getHistoryForMetric(metric);
+        for (HealthData data : calorieHistory) {
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() +
+                    " (" + (data.getNotes().isEmpty() ? "No notes" : data.getNotes()) + ")");
         }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalCalories = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof CalorieMetric)
-                .mapToDouble(HealthData::getValue)
-                .sum();
+        double totalCalories = user.getTotalRecordedValue(metric);
+        Goal goal = user.getGoalForMetric(metric);
 
-        String notes = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof CalorieMetric)
-                .map(HealthData::getNotes)
-                .findFirst()
-                .orElse("No notes provided");
+        if (goal != null) {
+            goal.checkIfAchieved(totalCalories);
 
-        for (Goal goal : user.getGoals()) {
-            if (goal.getMetric() instanceof CalorieMetric) {
-                double goalValue = goal.getTargetValue();
-                goal.checkIfAchieved(totalCalories);
-                System.out.println("\n📊 Calorie Goal Progress:");
-                System.out.println("➡ Goal: " + goalValue + " kcal");
-                System.out.println("➡ Recorded: " + totalCalories + " kcal");
-                if (goal.isAchieved()) {
-                    System.out.println("✅ Goal Achieved! 🎉 Well balanced!");
-                } else {
-                    double difference = goalValue - totalCalories;
-                    System.out.println("❌ Goal Not Achieved. You need " + difference + " more kcal.");
-                }
-                System.out.println("📝 Notes: " + notes);
+            System.out.println("\n📊 Calorie Goal Progress:");
+            System.out.println("➡ Goal: " + goal.getTargetValue() + " kcal");
+            System.out.println("➡ Recorded: " + totalCalories + " kcal");
+
+            if (goal.isAchieved()) {
+                System.out.println("✅ Goal Achieved! 🎉 Well balanced!");
+            } else {
+                double difference = goal.getTargetValue() - totalCalories;
+                System.out.println("❌ Goal Not Achieved. You need " + difference + " more kcal.");
             }
+        } else {
+            System.out.println("⚠ No goal set for Calories.");
         }
     }
-
 }
+
 
