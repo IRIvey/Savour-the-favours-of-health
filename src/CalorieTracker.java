@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.List;
 
 public class CalorieTracker implements Tracker {
     private final HealthMetric metric = new CalorieMetric();
@@ -18,15 +17,18 @@ public class CalorieTracker implements Tracker {
         user.addHealthData(data);
 
         System.out.println("✅ Calories logged: " + calories + " " + metric.getUnit());
+
+        checkGoals(user);
     }
 
     @Override
     public void displayStats(User user) {
         System.out.println("\n📊 Calorie Intake History:");
-        List<HealthData> calorieHistory = user.getHistoryForMetric(metric);
-        for (HealthData data : calorieHistory) {
-            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() +
-                    " (" + (data.getNotes().isEmpty() ? "No notes" : data.getNotes()) + ")");
+        for (HealthData data : user.getHealthHistory()) {
+            if (data.getMetric() instanceof CalorieMetric) {
+                System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() +
+                        (data.getNotes().isEmpty() ? "" : " (Notes: " + data.getNotes() + ")"));
+            }
         }
     }
 
@@ -35,23 +37,22 @@ public class CalorieTracker implements Tracker {
         double totalCalories = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
 
-        if (goal != null) {
-            goal.checkIfAchieved(totalCalories);
-
-            System.out.println("\n📊 Calorie Goal Progress:");
-            System.out.println("➡ Goal: " + goal.getTargetValue() + " kcal");
-            System.out.println("➡ Recorded: " + totalCalories + " kcal");
-
-            if (goal.isAchieved()) {
-                System.out.println("✅ Goal Achieved! 🎉 Well balanced!");
-            } else {
-                double difference = goal.getTargetValue() - totalCalories;
-                System.out.println("❌ Goal Not Achieved. You need " + difference + " more kcal.");
-            }
-        } else {
+        if (goal == null) {
             System.out.println("⚠ No goal set for Calories.");
+            return;
+        }
+
+        goal.checkIfAchieved(totalCalories);
+
+        System.out.println("\n📊 Calorie Goal Progress:");
+        System.out.println("➡ Goal: " + goal.getTargetValue() + " kcal");
+        System.out.println("➡ Recorded: " + totalCalories + " kcal");
+
+        if (goal.isAchieved()) {
+            System.out.println("✅ Goal Achieved! 🎉 Well balanced!");
+        } else {
+            double difference = goal.getTargetValue() - totalCalories;
+            System.out.println("❌ Goal Not Achieved. You need " + difference + " more kcal.");
         }
     }
 }
-
-
