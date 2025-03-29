@@ -1,3 +1,5 @@
+import metric.HealthMetric;
+
 import java.time.LocalDateTime;
 
 public class HealthData {

@@ -1,4 +1,7 @@
-import tracker.Tracker;
+package tracker;
+
+import metric.HealthMetric;
+import metric.WeightMetric;
 
 import java.util.Scanner;
 

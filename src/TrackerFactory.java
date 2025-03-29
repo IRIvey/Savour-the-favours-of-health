@@ -1,4 +1,4 @@
-package tracker;
+import tracker.*;
 
 public class TrackerFactory {
     private static final TrackerFactory instance = new TrackerFactory();
