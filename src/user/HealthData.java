@@ -1,3 +1,5 @@
+package user;
+
 import metric.HealthMetric;
 
 import java.time.LocalDateTime;

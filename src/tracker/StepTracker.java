@@ -49,14 +49,14 @@ public class StepTracker implements Tracker {
             if (goal.getMetric() instanceof StepMetric) {
                 double goalValue = goal.getTargetValue();
                 goal.checkIfAchieved(totalSteps);
-                System.out.println("\n📊 Steps Goal Progress:");
-                System.out.println("➡ Goal: " + goalValue + " steps");
+                System.out.println("\n📊 Steps goal.Goal Progress:");
+                System.out.println("➡ goal.Goal: " + goalValue + " steps");
                 System.out.println("➡ Recorded: " + totalSteps + " steps");
                 if (goal.isAchieved()) {
-                    System.out.println("✅ Goal Achieved! 🎉 Keep stepping!");
+                    System.out.println("✅ goal.Goal Achieved! 🎉 Keep stepping!");
                 } else {
                     double difference = goalValue - totalSteps;
-                    System.out.println("❌ Goal Not Achieved. You need " + difference + " more steps.");
+                    System.out.println("❌ goal.Goal Not Achieved. You need " + difference + " more steps.");
                 }
                 System.out.println("📝 Notes: " + notes);
             }

@@ -46,15 +46,15 @@ public class CalorieTracker implements Tracker {
 
         goal.checkIfAchieved(totalCalories);
 
-        System.out.println("\n📊 Calorie Goal Progress:");
-        System.out.println("➡ Goal: " + goal.getTargetValue() + " kcal");
+        System.out.println("\n📊 Calorie goal.Goal Progress:");
+        System.out.println("➡ goal.Goal: " + goal.getTargetValue() + " kcal");
         System.out.println("➡ Recorded: " + totalCalories + " kcal");
 
         if (goal.isAchieved()) {
-            System.out.println("✅ Goal Achieved! 🎉 Well balanced!");
+            System.out.println("✅ goal.Goal Achieved! 🎉 Well balanced!");
         } else {
             double difference = goal.getTargetValue() - totalCalories;
-            System.out.println("❌ Goal Not Achieved. You need " + difference + " more kcal.");
+            System.out.println("❌ goal.Goal Not Achieved. You need " + difference + " more kcal.");
         }
     }
 }

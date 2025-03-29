@@ -1,5 +1,8 @@
+import factory.TrackerFactory;
+import goal.*;
 import metric.*;
 import tracker.Tracker;
+import user.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +39,7 @@ public class CommandExecutor {
     }
 
     private void setGoal(User user) {
-        System.out.println("=== Set a Goal ===");
+        System.out.println("=== Set a goal.Goal ===");
         System.out.println("Choose a metric to set a goal:");
         for (Map.Entry<Integer, HealthMetric> entry : metricMap.entrySet()) {
             System.out.println(entry.getKey() + ". " + entry.getValue().getName());
@@ -73,6 +76,6 @@ public class CommandExecutor {
 
         Goal newGoal = new Goal(selectedMetric, targetValue, period);
         user.addGoal(newGoal);
-        System.out.println("✅ Goal set for " + selectedMetric.getName() + " (" + period.getPeriodName() + ")!");
+        System.out.println("✅ goal.Goal set for " + selectedMetric.getName() + " (" + period.getPeriodName() + ")!");
     }
 }

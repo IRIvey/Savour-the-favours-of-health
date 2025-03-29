@@ -1,3 +1,5 @@
+import user.User;
+
 import java.util.Scanner;
 
 public class HealthTrackingSystem {

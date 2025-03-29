@@ -1,3 +1,5 @@
+package goal;
+
 import metric.HealthMetric;
 
 public class Goal {

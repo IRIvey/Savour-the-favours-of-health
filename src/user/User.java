@@ -1,3 +1,6 @@
+package user;
+
+import goal.Goal;
 import metric.HealthMetric;
 
 import java.util.ArrayList;
@@ -24,12 +27,12 @@ public class User {
         for (Goal goal : goals) {
             if (goal.getMetric().getClass().equals(newGoal.getMetric().getClass())) {
                 goal.updateTargetValue(newGoal.getTargetValue());
-                System.out.println("✅ Goal updated for " + goal.getMetric().getName() + " (" + goal.getTargetValue() + " " + goal.getMetric().getUnit() + ")");
+                System.out.println("✅ goal.Goal updated for " + goal.getMetric().getName() + " (" + goal.getTargetValue() + " " + goal.getMetric().getUnit() + ")");
                 return;
             }
         }
         goals.add(newGoal);
-        System.out.println("✅ Goal set for " + newGoal.getMetric().getName() + " (" + newGoal.getTargetValue() + " " + newGoal.getMetric().getUnit() + ")");
+        System.out.println("✅ goal.Goal set for " + newGoal.getMetric().getName() + " (" + newGoal.getTargetValue() + " " + newGoal.getMetric().getUnit() + ")");
     }
 
 
@@ -39,7 +42,7 @@ public class User {
             if (goal.getMetric().getClass().equals(data.getMetric().getClass())) {
                 goal.checkIfAchieved(data.getValue());
                 if (goal.isAchieved()) {
-                    System.out.println("🎉 Goal achieved for " + goal.getMetric().getName() + "!");
+                    System.out.println("🎉 goal.Goal achieved for " + goal.getMetric().getName() + "!");
                 }
             }
         }
