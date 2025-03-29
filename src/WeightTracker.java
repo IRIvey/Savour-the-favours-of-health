@@ -1,67 +1,50 @@
 import java.util.Scanner;
 
 public class WeightTracker implements Tracker {
+    private final HealthMetric metric = new WeightMetric();
     private final Scanner scanner = new Scanner(System.in);
 
     @Override
     public void track(User user) {
-        System.out.println("\n=== Weight Tracking ===");
-        System.out.print("Enter your current weight (kg): ");
+        System.out.print("Enter your weight (kg): ");
         double weight = scanner.nextDouble();
         scanner.nextLine();
 
-        System.out.print("Any notes? ");
+        System.out.print("Any notes? (optional): ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(new WeightMetric(), weight, notes);
+        HealthData data = new HealthData(metric, weight, notes);
         user.addHealthData(data);
 
         checkGoals(user);
-        displayStats(user);
+
+        System.out.println("✅ Weight logged: " + weight + " " + metric.getUnit());
     }
 
     @Override
     public void displayStats(User user) {
-        System.out.println("\nWeight Statistics:");
-        double latestWeight = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof WeightMetric)
-                .mapToDouble(HealthData::getValue)
-                .reduce((first, second) -> second)
-                .orElse(0);
-        System.out.println("Latest recorded weight: " + latestWeight + " kg");
+        System.out.println("\n📊 Weight History:");
+        for (HealthData data : user.getHistoryForMetric(metric)) {
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() + " (" + data.getNotes() + ")");
+        }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalWeight = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof WeightMetric)
-                .mapToDouble(HealthData::getValue)
-                .sum();
+        double latestWeight = user.getTotalRecordedValue(metric);
+        Goal goal = user.getGoalForMetric(metric);
 
-        String notes = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof WeightMetric)
-                .map(HealthData::getNotes)
-                .findFirst()
-                .orElse("No notes provided");
-
-        for (Goal goal : user.getGoals()) {
-            if (goal.getMetric() instanceof WeightMetric) {
-                double goalValue = goal.getTargetValue();
-                goal.checkIfAchieved(totalWeight);
-                System.out.println("\n📊 Weight Goal Progress:");
-                System.out.println("➡ Goal: " + goalValue + " kg");
-                System.out.println("➡ Recorded: " + totalWeight + " kg");
-                if (goal.isAchieved()) {
-                    System.out.println("✅ Goal Achieved! 🎉 Keep up the great work!");
-                } else {
-                    double difference = goalValue - totalWeight;
-                    System.out.println("❌ Goal Not Achieved. You need to lose/gain " + difference + " kg.");
-                }
-                System.out.println("📝 Notes: " + notes);
+        if (goal != null) {
+            goal.checkIfAchieved(latestWeight);
+            System.out.println("\n📊 Weight Goal Progress:");
+            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
+            System.out.println("➡ Recorded: " + latestWeight + " " + metric.getUnit());
+            if (goal.isAchieved()) {
+                System.out.println("✅ Goal Achieved! 🎉 Keep maintaining!");
+            } else {
+                System.out.println("❌ Goal Not Achieved. Adjust by " + (goal.getTargetValue() - latestWeight) + " kg.");
             }
         }
     }
 }
-
-
 
