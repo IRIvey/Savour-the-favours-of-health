@@ -1,18 +1,21 @@
 package challenge;
 
 import metric.HealthMetric;
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public abstract class Challenge {
+public abstract class Challenge implements Serializable {
     protected HealthMetric metric;
     protected LocalDate startDate;
     protected LocalDate endDate;
+    protected double targetValue;
     protected int currentStreak;
     protected int maxStreak;
     protected boolean active;
 
-    public Challenge(HealthMetric metric, LocalDate startDate, LocalDate endDate) {
+    public Challenge(HealthMetric metric, double targetValue, LocalDate startDate, LocalDate endDate) {
         this.metric = metric;
+        this.targetValue = targetValue;
         this.startDate = startDate;
         this.endDate = endDate;
         this.currentStreak = 0;
@@ -20,57 +23,42 @@ public abstract class Challenge {
         this.active = true;
     }
 
-    public HealthMetric getMetric() {
-        return metric;
+    public void recordActualValue(double actualValue) {
+        if (!active) return;
+        boolean met = actualValue >= targetValue;
+        if (met) {
+            currentStreak++;
+            if (currentStreak > maxStreak) maxStreak = currentStreak;
+        } else {
+            currentStreak = 0;
+        }
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public int getCurrentStreak() {
-        return currentStreak;
-    }
-
-    public int getMaxStreak() {
-        return maxStreak;
+    public void endChallenge() {
+        active = false;
     }
 
     public boolean isActive() {
         return active;
     }
 
+    public String getSummary() {
+        return String.format("[%s Challenge] Metric: %s | Target: %.2f %s | Max Streak: %d | Status: %s",
+                getChallengeType(),
+                metric.getName(),
+                targetValue,
+                metric.getUnit(),
+                maxStreak,
+                active ? "Active" : "Ended");
+    }
+
     public abstract String getChallengeType();
 
-
-    public void recordDailyProgress(boolean met) {
-        if (!active) {
-            System.out.println("Challenge is no longer active.");
-            return;
-        }
-        if (met) {
-            currentStreak++;
-            if (currentStreak > maxStreak) {
-                maxStreak = currentStreak;
-            }
-        } else {
-            currentStreak = 0;
-        }
+    public HealthMetric getMetric() {
+        return metric;
     }
 
-
-    public void endChallenge() {
-        active = false;
-    }
-
-
-    public String getSummary() {
-        String status = active ? "Active" : "Ended";
-        return String.format("Challenge (%s) for %s from %s to %s: Current Streak = %d, Max Streak = %d, Status = %s",
-                getChallengeType(), metric.getName(), startDate, endDate, currentStreak, maxStreak, status);
+    public double getTargetValue() {
+        return targetValue;
     }
 }

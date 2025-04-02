@@ -4,8 +4,8 @@ import metric.HealthMetric;
 import java.time.LocalDate;
 
 public class MonthlyChallenge extends Challenge {
-    public MonthlyChallenge(HealthMetric metric, LocalDate startDate) {
-        super(metric, startDate, startDate.plusDays(30));
+    public MonthlyChallenge(HealthMetric metric, double targetValue, LocalDate startDate) {
+        super(metric, targetValue, startDate, startDate.plusDays(30));
     }
 
     @Override

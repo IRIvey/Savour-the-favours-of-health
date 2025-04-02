@@ -1,16 +1,15 @@
 package challenge;
 
+import metric.HealthMetric;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import metric.HealthMetric;
 
-public class ChallengeTracker {
+public class ChallengeTracker implements Serializable {
     private static ChallengeTracker instance;
-    private Map<String, Challenge> activeChallenges;
+    private final Map<String, Challenge> activeChallenges = new HashMap<>();
 
-    private ChallengeTracker() {
-        activeChallenges = new HashMap<>();
-    }
+    private ChallengeTracker() {}
 
     public static ChallengeTracker getInstance() {
         if (instance == null) {
@@ -20,21 +19,14 @@ public class ChallengeTracker {
     }
 
     public void addChallenge(Challenge challenge) {
-        String key = challenge.getMetric().getName();
-        activeChallenges.put(key, challenge);
-        System.out.println("Challenge added for " + key);
+        activeChallenges.put(challenge.getMetric().getName(), challenge);
+        System.out.println("Challenge started for " + challenge.getMetric().getName());
     }
 
-    public Challenge getChallenge(HealthMetric metric) {
-        return activeChallenges.get(metric.getName());
-    }
-
-    public void recordProgress(HealthMetric metric, boolean met) {
+    public void recordValue(HealthMetric metric, double actualValue) {
         Challenge challenge = activeChallenges.get(metric.getName());
-        if (challenge != null && challenge.isActive()){
-            challenge.recordDailyProgress(met);
-        } else {
-            System.out.println("No active challenge for " + metric.getName());
+        if (challenge != null && challenge.isActive()) {
+            challenge.recordActualValue(actualValue);
         }
     }
 
@@ -42,11 +34,9 @@ public class ChallengeTracker {
         Challenge challenge = activeChallenges.get(metric.getName());
         if (challenge != null) {
             challenge.endChallenge();
-            System.out.println("Challenge ended for " + metric.getName());
             System.out.println(challenge.getSummary());
         }
     }
-
 
     public void listActiveChallenges() {
         if (activeChallenges.isEmpty()) {
@@ -56,6 +46,10 @@ public class ChallengeTracker {
         for (Challenge challenge : activeChallenges.values()) {
             System.out.println(challenge.getSummary());
         }
+    }
+
+    public Map<String, Challenge> getAllChallenges() {
+        return activeChallenges;
     }
 }
 
