@@ -1,11 +1,11 @@
 package system;
 
-import factory.TrackerFactory;
-import goal.*;
+import user.*;
 import metric.*;
-import tracker.Tracker;
-import user.User;
-
+import goal.*;
+import main.*;
+import factory.*;
+import tracker.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -16,12 +16,12 @@ public class CommandExecutor {
     private final Scanner scanner = new Scanner(System.in);
 
     public CommandExecutor() {
-        metricMap.put(1, new WaterIntakeMetric());
-        metricMap.put(2, new SleepDurationMetric());
-        metricMap.put(3, new ExerciseDurationMetric());
-        metricMap.put(4, new CalorieMetric());
-        metricMap.put(5, new WeightMetric());
-        metricMap.put(6, new StepMetric());
+        metricMap.put(1, new metric.WaterIntakeMetric());
+        metricMap.put(2, new metric.SleepDurationMetric());
+        metricMap.put(3, new metric.ExerciseDurationMetric());
+        metricMap.put(4, new metric.CalorieMetric());
+        metricMap.put(5, new metric.WeightMetric());
+        metricMap.put(6, new metric.StepMetric());
     }
 
     public void executeCommand(int choice, User user) {
@@ -41,7 +41,7 @@ public class CommandExecutor {
     }
 
     private void setGoal(User user) {
-        System.out.println("=== Set a goal.Goal ===");
+        System.out.println("=== Set a Goal ===");
         System.out.println("Choose a metric to set a goal:");
         for (Map.Entry<Integer, HealthMetric> entry : metricMap.entrySet()) {
             System.out.println(entry.getKey() + ". " + entry.getValue().getName());
@@ -67,9 +67,9 @@ public class CommandExecutor {
 
         GoalPeriod period;
         switch (periodChoice) {
-            case 1 -> period = new DailyGoal();
-            case 2 -> period = new WeeklyGoal();
-            case 3 -> period = new MonthlyGoal();
+            case 1 -> period = new goal.DailyGoal();
+            case 2 -> period = new goal.WeeklyGoal();
+            case 3 -> period = new goal.MonthlyGoal();
             default -> {
                 System.out.println("Invalid goal period.");
                 return;
@@ -78,6 +78,6 @@ public class CommandExecutor {
 
         Goal newGoal = new Goal(selectedMetric, targetValue, period);
         user.addGoal(newGoal);
-        System.out.println("✅ goal.Goal set for " + selectedMetric.getName() + " (" + period.getPeriodName() + ")!");
+        System.out.println("✅ Goal set for " + selectedMetric.getName() + " (" + period.getPeriodName() + ")!");
     }
 }

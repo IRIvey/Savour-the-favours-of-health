@@ -1,5 +1,11 @@
 package tracker;
 
+import user.*;
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.util.Scanner;
 
 public class WaterTracker implements Tracker {
@@ -38,15 +44,16 @@ public class WaterTracker implements Tracker {
 
         if (goal != null) {
             goal.checkIfAchieved(totalIntake);
-            System.out.println("\n📊 Water goal.Goal Progress:");
-            System.out.println("➡ goal.Goal: " + goal.getTargetValue() + " " + metric.getUnit());
+            System.out.println("\n📊 Water Goal Progress:");
+            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
             System.out.println("➡ Recorded: " + totalIntake + " " + metric.getUnit());
             if (goal.isAchieved()) {
-                System.out.println("✅ goal.Goal Achieved! 🎉 Keep Hydrated!");
+                System.out.println("✅ Goal Achieved! 🎉 Keep Hydrated!");
             } else {
-                System.out.println("❌ goal.Goal Not Achieved. Drink " + (goal.getTargetValue() - totalIntake) + " more " + metric.getUnit() + ".");
+                System.out.println("❌ Goal Not Achieved. Drink " + (goal.getTargetValue() - totalIntake) + " more " + metric.getUnit() + ".");
             }
         }
     }
 }
+
 

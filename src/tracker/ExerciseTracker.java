@@ -1,5 +1,11 @@
 package tracker;
 
+import user.*;
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.util.Scanner;
 
 public class ExerciseTracker implements Tracker {
@@ -38,16 +44,17 @@ public class ExerciseTracker implements Tracker {
 
         if (goal != null) {
             goal.checkIfAchieved(totalExercise);
-            System.out.println("\n📊 Exercise goal.Goal Progress:");
-            System.out.println("➡ goal.Goal: " + goal.getTargetValue() + " " + metric.getUnit());
+            System.out.println("\n📊 Exercise Goal Progress:");
+            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
             System.out.println("➡ Recorded: " + totalExercise + " " + metric.getUnit());
             if (goal.isAchieved()) {
-                System.out.println("✅ goal.Goal Achieved! 🎉 Keep it up!");
+                System.out.println("✅ Goal Achieved! 🎉 Keep it up!");
             } else {
-                System.out.println("❌ goal.Goal Not Achieved. Exercise " + (goal.getTargetValue() - totalExercise) + " more " + metric.getUnit() + ".");
+                System.out.println("❌ Goal Not Achieved. Exercise " + (goal.getTargetValue() - totalExercise) + " more " + metric.getUnit() + ".");
             }
         }
     }
 }
+
 
 

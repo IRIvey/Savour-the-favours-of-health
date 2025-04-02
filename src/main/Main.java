@@ -1,3 +1,5 @@
+package main;
+
 import system.HealthTrackingSystem;
 
 public class Main {

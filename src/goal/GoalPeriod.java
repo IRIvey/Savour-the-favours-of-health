@@ -1,5 +1,5 @@
 package goal;
 
-interface GoalPeriod {
+public interface GoalPeriod {
     String getPeriodName();
 }

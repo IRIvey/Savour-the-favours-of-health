@@ -1,8 +1,11 @@
 package tracker;
 
-import metric.HealthMetric;
-import metric.WeightMetric;
-
+import user.*;
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.util.Scanner;
 
 public class WeightTracker implements Tracker {
@@ -41,15 +44,14 @@ public class WeightTracker implements Tracker {
 
         if (goal != null) {
             goal.checkIfAchieved(latestWeight);
-            System.out.println("\n📊 Weight goal.Goal Progress:");
-            System.out.println("➡ goal.Goal: " + goal.getTargetValue() + " " + metric.getUnit());
+            System.out.println("\n📊 Weight Goal Progress:");
+            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
             System.out.println("➡ Recorded: " + latestWeight + " " + metric.getUnit());
             if (goal.isAchieved()) {
-                System.out.println("✅ goal.Goal Achieved! 🎉 Keep maintaining!");
+                System.out.println("✅ Goal Achieved! 🎉 Keep maintaining!");
             } else {
-                System.out.println("❌ goal.Goal Not Achieved. Adjust by " + (goal.getTargetValue() - latestWeight) + " kg.");
+                System.out.println("❌ Goal Not Achieved. Adjust by " + (goal.getTargetValue() - latestWeight) + " kg.");
             }
         }
     }
 }
-

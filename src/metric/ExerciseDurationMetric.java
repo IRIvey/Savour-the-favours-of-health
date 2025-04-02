@@ -5,3 +5,4 @@ public class ExerciseDurationMetric extends HealthMetric {
         super("Exercise Duration", "minutes");
     }
 }
+

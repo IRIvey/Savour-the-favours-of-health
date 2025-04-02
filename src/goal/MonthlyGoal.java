@@ -1,6 +1,7 @@
 package goal;
 
-class MonthlyGoal implements GoalPeriod {
+public class MonthlyGoal implements GoalPeriod {
+    @Override
     public String getPeriodName() {
         return "Monthly";
     }

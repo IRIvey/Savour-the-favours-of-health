@@ -1,8 +1,10 @@
 package user;
 
-import goal.Goal;
-import metric.HealthMetric;
-
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,22 +29,20 @@ public class User {
         for (Goal goal : goals) {
             if (goal.getMetric().getClass().equals(newGoal.getMetric().getClass())) {
                 goal.updateTargetValue(newGoal.getTargetValue());
-                System.out.println("✅ goal.Goal updated for " + goal.getMetric().getName() + " (" + goal.getTargetValue() + " " + goal.getMetric().getUnit() + ")");
+                System.out.println("✅ Goal updated for " + goal.getMetric().getName() + " (" + goal.getTargetValue() + " " + goal.getMetric().getUnit() + ")");
                 return;
             }
         }
         goals.add(newGoal);
-        System.out.println("✅ goal.Goal set for " + newGoal.getMetric().getName() + " (" + newGoal.getTargetValue() + " " + newGoal.getMetric().getUnit() + ")");
+        System.out.println("✅ Goal set for " + newGoal.getMetric().getName() + " (" + newGoal.getTargetValue() + " " + newGoal.getMetric().getUnit() + ")");
     }
-
-
 
     private void checkGoals(HealthData data) {
         for (Goal goal : goals) {
             if (goal.getMetric().getClass().equals(data.getMetric().getClass())) {
                 goal.checkIfAchieved(data.getValue());
                 if (goal.isAchieved()) {
-                    System.out.println("🎉 goal.Goal achieved for " + goal.getMetric().getName() + "!");
+                    System.out.println("🎉 Goal achieved for " + goal.getMetric().getName() + "!");
                 }
             }
         }

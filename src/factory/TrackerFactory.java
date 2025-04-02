@@ -1,5 +1,10 @@
 package factory;
 
+import user.*;
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
 import tracker.*;
 
 public class TrackerFactory {

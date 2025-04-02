@@ -1,7 +1,10 @@
 package user;
 
-import metric.HealthMetric;
-
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.time.LocalDateTime;
 
 public class HealthData {
@@ -33,3 +36,4 @@ public class HealthData {
         return notes;
     }
 }
+

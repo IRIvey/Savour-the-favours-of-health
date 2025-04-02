@@ -9,7 +9,7 @@ public class MenuDisplay {
         System.out.println("4. Track Calories");
         System.out.println("5. Track Weight");
         System.out.println("6. Track Steps");
-        System.out.println("7. Set a goal.Goal");
+        System.out.println("7. Set a goal");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
     }

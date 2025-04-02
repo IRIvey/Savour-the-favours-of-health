@@ -1,5 +1,11 @@
 package tracker;
 
+import user.*;
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.util.Scanner;
 
 public class SleepTracker implements Tracker {
@@ -38,13 +44,13 @@ public class SleepTracker implements Tracker {
 
         if (goal != null) {
             goal.checkIfAchieved(totalSleep);
-            System.out.println("\n📊 Sleep goal.Goal Progress:");
-            System.out.println("➡ goal.Goal: " + goal.getTargetValue() + " " + metric.getUnit());
+            System.out.println("\n📊 Sleep Goal Progress:");
+            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
             System.out.println("➡ Recorded: " + totalSleep + " " + metric.getUnit());
             if (goal.isAchieved()) {
-                System.out.println("✅ goal.Goal Achieved! 🎉 Well Rested!");
+                System.out.println("✅ Goal Achieved! 🎉 Well Rested!");
             } else {
-                System.out.println("❌ goal.Goal Not Achieved. Sleep " + (goal.getTargetValue() - totalSleep) + " more " + metric.getUnit() + ".");
+                System.out.println("❌ Goal Not Achieved. Sleep " + (goal.getTargetValue() - totalSleep) + " more " + metric.getUnit() + ".");
             }
         }
     }

@@ -5,3 +5,4 @@ public class CalorieMetric extends HealthMetric {
         super("Calories", "kcal");
     }
 }
+

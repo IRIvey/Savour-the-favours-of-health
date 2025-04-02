@@ -1,6 +1,7 @@
 package goal;
 
-class WeeklyGoal implements GoalPeriod {
+public class WeeklyGoal implements GoalPeriod {
+    @Override
     public String getPeriodName() {
         return "Weekly";
     }
