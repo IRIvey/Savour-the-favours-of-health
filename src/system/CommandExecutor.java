@@ -16,8 +16,10 @@ public class CommandExecutor {
     private final TrackerFactory trackerFactory = TrackerFactory.getInstance();
     private final Map<Integer, HealthMetric> metricMap = new HashMap<>();
     private final Scanner scanner = new Scanner(System.in);
+    private final ChallengeTracker tracker;
 
-    public CommandExecutor() {
+    public CommandExecutor(ChallengeTracker tracker) {
+        this.tracker = tracker;
         metricMap.put(1, new WaterIntakeMetric());
         metricMap.put(2, new SleepDurationMetric());
         metricMap.put(3, new ExerciseDurationMetric());
@@ -89,8 +91,6 @@ public class CommandExecutor {
     }
 
     private void handleChallenge(User user) {
-        ChallengeTracker challengeTracker = ChallengeTracker.getInstance();
-
         System.out.println("=== Challenge Menu ===");
         System.out.println("1. Start a new Challenge");
         System.out.println("2. Record today's progress for a Challenge");
@@ -101,7 +101,7 @@ public class CommandExecutor {
         scanner.nextLine();
 
         switch (option) {
-            case 1:
+            case 1 -> {
                 System.out.println("Choose a metric for the challenge:");
                 for (Map.Entry<Integer, HealthMetric> entry : metricMap.entrySet()) {
                     System.out.println(entry.getKey() + ". " + entry.getValue().getName());
@@ -114,18 +114,20 @@ public class CommandExecutor {
                     System.out.println("Invalid metric choice.");
                     return;
                 }
+                System.out.print("Enter target value for the challenge: ");
+                double targetValue = scanner.nextDouble();
+                scanner.nextLine();
                 System.out.println("Choose challenge period: 1. Weekly  2. Monthly");
                 int periodChoice = scanner.nextInt();
                 scanner.nextLine();
                 try {
-                    Challenge challenge = ChallengeFactory.createChallenge(selectedMetric, periodChoice);
-                    challengeTracker.addChallenge(challenge);
+                    Challenge challenge = ChallengeFactory.createChallenge(selectedMetric, targetValue, periodChoice);
+                    tracker.addChallenge(challenge);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Invalid challenge period choice.");
                 }
-                break;
-
-            case 2:
+            }
+            case 2 -> {
                 System.out.println("Record progress for which metric?");
                 for (Map.Entry<Integer, HealthMetric> entry : metricMap.entrySet()) {
                     System.out.println(entry.getKey() + ". " + entry.getValue().getName());
@@ -138,13 +140,12 @@ public class CommandExecutor {
                     System.out.println("Invalid metric choice.");
                     return;
                 }
-                System.out.print("Did you meet your target today? (true/false): ");
-                boolean met = scanner.nextBoolean();
+                System.out.print("Enter today's value for the metric: ");
+                double value = scanner.nextDouble();
                 scanner.nextLine();
-                challengeTracker.recordProgress(progressMetric, met);
-                break;
-
-            case 3:
+                tracker.recordValue(progressMetric, value);
+            }
+            case 3 -> {
                 System.out.println("End challenge for which metric?");
                 for (Map.Entry<Integer, HealthMetric> entry : metricMap.entrySet()) {
                     System.out.println(entry.getKey() + ". " + entry.getValue().getName());
@@ -157,15 +158,10 @@ public class CommandExecutor {
                     System.out.println("Invalid metric choice.");
                     return;
                 }
-                challengeTracker.endChallenge(endMetric);
-                break;
-
-            case 4:
-                challengeTracker.listActiveChallenges();
-                break;
-
-            default:
-                System.out.println("Invalid challenge option.");
+                tracker.endChallenge(endMetric);
+            }
+            case 4 -> tracker.listActiveChallenges();
+            default -> System.out.println("Invalid challenge option.");
         }
     }
 }

@@ -3,68 +3,53 @@ package tracker;
 import user.*;
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
+import challenge.ChallengeTracker;
 import java.util.Scanner;
 
 public class StepTracker implements Tracker {
+    private final HealthMetric metric = new StepMetric();
     private final Scanner scanner = new Scanner(System.in);
 
     @Override
     public void track(User user) {
-        System.out.println("\n=== Step Tracking ===");
-        System.out.print("Enter step count: ");
+        System.out.print("Enter steps taken: ");
         double steps = scanner.nextDouble();
         scanner.nextLine();
 
-        System.out.print("Any notes? ");
+        System.out.print("Any notes? (optional): ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(new StepMetric(), steps, notes);
+        HealthData data = new HealthData(metric, steps, notes);
         user.addHealthData(data);
 
+        ChallengeTracker.getInstance().recordValue(metric, steps);
+
+        System.out.println("✅ Steps logged: " + steps + " " + metric.getUnit());
         checkGoals(user);
-        displayStats(user);
     }
 
     @Override
     public void displayStats(User user) {
-        System.out.println("\nStep Statistics:");
-        double totalSteps = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof StepMetric)
-                .mapToDouble(HealthData::getValue)
-                .sum();
-        System.out.println("Total steps recorded: " + totalSteps);
+        System.out.println("📊 Step History:");
+        for (HealthData data : user.getHistoryForMetric(metric)) {
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
+        }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalSteps = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof StepMetric)
-                .mapToDouble(HealthData::getValue)
-                .sum();
+        double total = user.getTotalRecordedValue(metric);
+        Goal goal = user.getGoalForMetric(metric);
 
-        String notes = user.getHealthHistory().stream()
-                .filter(data -> data.getMetric() instanceof StepMetric)
-                .map(HealthData::getNotes)
-                .findFirst()
-                .orElse("No notes provided");
-
-        for (Goal goal : user.getGoals()) {
-            if (goal.getMetric() instanceof StepMetric) {
-                double goalValue = goal.getTargetValue();
-                goal.checkIfAchieved(totalSteps);
-                System.out.println("\n📊 Steps Goal Progress:");
-                System.out.println("➡ Goal: " + goalValue + " steps");
-                System.out.println("➡ Recorded: " + totalSteps + " steps");
-                if (goal.isAchieved()) {
-                    System.out.println("✅ Goal Achieved! 🎉 Keep stepping!");
-                } else {
-                    double difference = goalValue - totalSteps;
-                    System.out.println("❌ Goal Not Achieved. You need " + difference + " more steps.");
-                }
-                System.out.println("📝 Notes: " + notes);
+        if (goal != null) {
+            goal.checkIfAchieved(total);
+            System.out.println("📊 Goal Progress:");
+            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
+            System.out.println("➡ Recorded: " + total + " " + metric.getUnit());
+            if (goal.isAchieved()) {
+                System.out.println("✅ Goal Achieved! 🎉");
+            } else {
+                System.out.println("❌ Goal Not Achieved. You need " + (goal.getTargetValue() - total) + " more " + metric.getUnit() + ".");
             }
         }
     }

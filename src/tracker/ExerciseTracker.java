@@ -3,9 +3,7 @@ package tracker;
 import user.*;
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
+import challenge.ChallengeTracker;
 import java.util.Scanner;
 
 public class ExerciseTracker implements Tracker {
@@ -24,33 +22,34 @@ public class ExerciseTracker implements Tracker {
         HealthData data = new HealthData(metric, duration, notes);
         user.addHealthData(data);
 
-        checkGoals(user);
+        ChallengeTracker.getInstance().recordValue(metric, duration);
 
         System.out.println("✅ Exercise logged: " + duration + " " + metric.getUnit());
+        checkGoals(user);
     }
 
     @Override
     public void displayStats(User user) {
-        System.out.println("\n📊 Exercise History:");
+        System.out.println("📊 Exercise History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
-            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() + " (" + data.getNotes() + ")");
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalExercise = user.getTotalRecordedValue(metric);
+        double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
 
         if (goal != null) {
-            goal.checkIfAchieved(totalExercise);
-            System.out.println("\n📊 Exercise Goal Progress:");
+            goal.checkIfAchieved(total);
+            System.out.println("📊 Goal Progress:");
             System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
-            System.out.println("➡ Recorded: " + totalExercise + " " + metric.getUnit());
+            System.out.println("➡ Recorded: " + total + " " + metric.getUnit());
             if (goal.isAchieved()) {
-                System.out.println("✅ Goal Achieved! 🎉 Keep it up!");
+                System.out.println("✅ Goal Achieved! 🎉");
             } else {
-                System.out.println("❌ Goal Not Achieved. Exercise " + (goal.getTargetValue() - totalExercise) + " more " + metric.getUnit() + ".");
+                System.out.println("❌ Goal Not Achieved. You need " + (goal.getTargetValue() - total) + " more " + metric.getUnit() + ".");
             }
         }
     }
