@@ -1,3 +1,0 @@
-interface GoalPeriod {
-    String getPeriodName();
-}

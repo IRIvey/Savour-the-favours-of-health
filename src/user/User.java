@@ -1,3 +1,10 @@
+package user;
+
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +36,6 @@ public class User {
         goals.add(newGoal);
         System.out.println("✅ Goal set for " + newGoal.getMetric().getName() + " (" + newGoal.getTargetValue() + " " + newGoal.getMetric().getUnit() + ")");
     }
-
-
 
     private void checkGoals(HealthData data) {
         for (Goal goal : goals) {

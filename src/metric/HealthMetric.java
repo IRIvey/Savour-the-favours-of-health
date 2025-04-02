@@ -1,3 +1,5 @@
+package metric;
+
 public abstract class HealthMetric {
     private final String name;
     private final String unit;
@@ -15,3 +17,4 @@ public abstract class HealthMetric {
         return unit;
     }
 }
+

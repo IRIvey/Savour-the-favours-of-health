@@ -1,3 +1,7 @@
+package goal;
+
+import metric.HealthMetric;
+
 public class Goal {
     private final HealthMetric metric;
     private double targetValue;

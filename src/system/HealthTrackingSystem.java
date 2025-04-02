@@ -1,3 +1,10 @@
+package system;
+
+import user.*;
+import metric.*;
+import goal.*;
+import main.*;
+import factory.*;
 import java.util.Scanner;
 
 public class HealthTrackingSystem {
@@ -36,3 +43,4 @@ public class HealthTrackingSystem {
         }
     }
 }
+

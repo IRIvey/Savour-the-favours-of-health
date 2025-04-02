@@ -1,3 +1,11 @@
+package tracker;
+
+import user.*;
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import factory.*;
 import java.util.Scanner;
 
 public class WaterTracker implements Tracker {
@@ -47,4 +55,5 @@ public class WaterTracker implements Tracker {
         }
     }
 }
+
 

@@ -1,3 +1,12 @@
+package factory;
+
+import user.*;
+import metric.*;
+import goal.*;
+import system.*;
+import main.*;
+import tracker.*;
+
 public class TrackerFactory {
     private static final TrackerFactory instance = new TrackerFactory();
 
