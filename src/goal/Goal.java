@@ -2,7 +2,9 @@ package goal;
 
 import metric.HealthMetric;
 
-public class Goal {
+import java.io.Serializable;
+
+public class Goal implements Serializable {
     private final HealthMetric metric;
     private double targetValue;
     private final GoalPeriod period;

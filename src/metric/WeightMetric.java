@@ -1,6 +1,8 @@
 package metric;
 
-public class WeightMetric extends HealthMetric {
+import java.io.Serializable;
+
+public class WeightMetric extends HealthMetric implements Serializable {
     public WeightMetric() {
         super("Weight", "kg");
     }

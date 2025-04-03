@@ -1,6 +1,8 @@
 package metric;
 
-public class SleepDurationMetric extends HealthMetric {
+import java.io.Serializable;
+
+public class SleepDurationMetric extends HealthMetric implements Serializable {
     public SleepDurationMetric() {
         super("Sleep Duration", "hours");
     }
