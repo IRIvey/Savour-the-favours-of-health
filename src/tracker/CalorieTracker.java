@@ -5,6 +5,7 @@ import metric.*;
 import goal.*;
 import challenge.ChallengeTracker;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class CalorieTracker implements Tracker {
     private final HealthMetric metric = new CalorieMetric();
@@ -21,8 +22,13 @@ public class CalorieTracker implements Tracker {
 
         HealthData data = new HealthData(metric, calories, notes);
         user.addHealthData(data);
-
         ChallengeTracker.getInstance().recordValue(metric, calories);
+
+        Goal goal = user.getGoalForMetric(metric);
+        if (goal != null) {
+            goal.recordProgress(LocalDate.now(), calories);
+            System.out.println(goal.getProgressSummary());
+        }
 
         System.out.println("✅ Calories logged: " + calories + " " + metric.getUnit());
         checkGoals(user);
@@ -30,7 +36,7 @@ public class CalorieTracker implements Tracker {
 
     @Override
     public void displayStats(User user) {
-        System.out.println("📊 Calorie History:");
+        System.out.println("\n📊 Calorie History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
             System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
@@ -40,10 +46,9 @@ public class CalorieTracker implements Tracker {
     public void checkGoals(User user) {
         double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
-
         if (goal != null) {
             goal.checkIfAchieved(total);
-            System.out.println("📊 Goal Progress:");
+            System.out.println("\n📊 Goal Progress:");
             System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
             System.out.println("➡ Recorded: " + total + " " + metric.getUnit());
             if (goal.isAchieved()) {
@@ -54,5 +59,4 @@ public class CalorieTracker implements Tracker {
         }
     }
 }
-
 

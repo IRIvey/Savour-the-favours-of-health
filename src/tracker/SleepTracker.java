@@ -5,6 +5,7 @@ import metric.*;
 import goal.*;
 import challenge.ChallengeTracker;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class SleepTracker implements Tracker {
     private final HealthMetric metric = new SleepDurationMetric();
@@ -24,6 +25,12 @@ public class SleepTracker implements Tracker {
 
         ChallengeTracker.getInstance().recordValue(metric, duration);
 
+        Goal goal = user.getGoalForMetric(metric);
+        if (goal != null) {
+            goal.recordProgress(LocalDate.now(), duration);
+            System.out.println(goal.getProgressSummary());
+        }
+
         System.out.println("✅ Sleep logged: " + duration + " " + metric.getUnit());
         checkGoals(user);
     }
@@ -32,8 +39,7 @@ public class SleepTracker implements Tracker {
     public void displayStats(User user) {
         System.out.println("\n📊 Sleep History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
-            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() +
-                    (data.getNotes().isEmpty() ? "" : " (Notes: " + data.getNotes() + ")"));
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
     }
 
@@ -41,7 +47,6 @@ public class SleepTracker implements Tracker {
     public void checkGoals(User user) {
         double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
-
         if (goal != null) {
             goal.checkIfAchieved(total);
             System.out.println("\n📊 Goal Progress:");

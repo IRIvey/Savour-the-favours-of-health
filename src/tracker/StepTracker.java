@@ -5,6 +5,7 @@ import metric.*;
 import goal.*;
 import challenge.ChallengeTracker;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class StepTracker implements Tracker {
     private final HealthMetric metric = new StepMetric();
@@ -21,8 +22,13 @@ public class StepTracker implements Tracker {
 
         HealthData data = new HealthData(metric, steps, notes);
         user.addHealthData(data);
-
         ChallengeTracker.getInstance().recordValue(metric, steps);
+
+        Goal goal = user.getGoalForMetric(metric);
+        if (goal != null) {
+            goal.recordProgress(LocalDate.now(), steps);
+            System.out.println(goal.getProgressSummary());
+        }
 
         System.out.println("✅ Steps logged: " + steps + " " + metric.getUnit());
         checkGoals(user);
@@ -40,7 +46,6 @@ public class StepTracker implements Tracker {
     public void checkGoals(User user) {
         double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
-
         if (goal != null) {
             goal.checkIfAchieved(total);
             System.out.println("📊 Goal Progress:");

@@ -5,6 +5,7 @@ import metric.*;
 import goal.*;
 import challenge.ChallengeTracker;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class ExerciseTracker implements Tracker {
     private final HealthMetric metric = new ExerciseDurationMetric();
@@ -13,24 +14,29 @@ public class ExerciseTracker implements Tracker {
     @Override
     public void track(User user) {
         System.out.print("Enter exercise duration (minutes): ");
-        double duration = scanner.nextDouble();
+        double minutes = scanner.nextDouble();
         scanner.nextLine();
 
         System.out.print("Any notes? (optional): ");
         String notes = scanner.nextLine();
 
-        HealthData data = new HealthData(metric, duration, notes);
+        HealthData data = new HealthData(metric, minutes, notes);
         user.addHealthData(data);
+        ChallengeTracker.getInstance().recordValue(metric, minutes);
 
-        ChallengeTracker.getInstance().recordValue(metric, duration);
+        Goal goal = user.getGoalForMetric(metric);
+        if (goal != null) {
+            goal.recordProgress(LocalDate.now(), minutes);
+            System.out.println(goal.getProgressSummary());
+        }
 
-        System.out.println("✅ Exercise logged: " + duration + " " + metric.getUnit());
+        System.out.println("✅ Exercise logged: " + minutes + " " + metric.getUnit());
         checkGoals(user);
     }
 
     @Override
     public void displayStats(User user) {
-        System.out.println("📊 Exercise History:");
+        System.out.println("\n📊 Exercise History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
             System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
@@ -40,10 +46,9 @@ public class ExerciseTracker implements Tracker {
     public void checkGoals(User user) {
         double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
-
         if (goal != null) {
             goal.checkIfAchieved(total);
-            System.out.println("📊 Goal Progress:");
+            System.out.println("\n📊 Goal Progress:");
             System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
             System.out.println("➡ Recorded: " + total + " " + metric.getUnit());
             if (goal.isAchieved()) {

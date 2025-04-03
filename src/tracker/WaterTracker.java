@@ -5,6 +5,7 @@ import metric.*;
 import goal.*;
 import challenge.ChallengeTracker;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class WaterTracker implements Tracker {
     private final HealthMetric metric = new WaterIntakeMetric();
@@ -21,8 +22,13 @@ public class WaterTracker implements Tracker {
 
         HealthData data = new HealthData(metric, intake, notes);
         user.addHealthData(data);
-
         ChallengeTracker.getInstance().recordValue(metric, intake);
+
+        Goal goal = user.getGoalForMetric(metric);
+        if (goal != null) {
+            goal.recordProgress(LocalDate.now(), intake);
+            System.out.println(goal.getProgressSummary());
+        }
 
         System.out.println("✅ Water logged: " + intake + " " + metric.getUnit());
         checkGoals(user);
@@ -40,7 +46,6 @@ public class WaterTracker implements Tracker {
     public void checkGoals(User user) {
         double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
-
         if (goal != null) {
             goal.checkIfAchieved(total);
             System.out.println("\n📊 Goal Progress:");

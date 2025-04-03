@@ -23,42 +23,42 @@ public abstract class Challenge implements Serializable {
         this.active = true;
     }
 
+    public abstract String getChallengeType();
+
     public void recordActualValue(double actualValue) {
-        if (!active) return;
-        boolean met = actualValue >= targetValue;
-        if (met) {
+        if (!isActive()) return;
+
+        if (actualValue >= targetValue) {
             currentStreak++;
-            if (currentStreak > maxStreak) maxStreak = currentStreak;
+            maxStreak = Math.max(maxStreak, currentStreak);
         } else {
             currentStreak = 0;
         }
     }
 
     public void endChallenge() {
-        active = false;
-    }
-
-    public boolean isActive() {
-        return active;
+        this.active = false;
     }
 
     public String getSummary() {
-        return String.format("[%s Challenge] Metric: %s | Target: %.2f %s | Max Streak: %d | Status: %s",
-                getChallengeType(),
-                metric.getName(),
-                targetValue,
-                metric.getUnit(),
-                maxStreak,
-                active ? "Active" : "Ended");
+        return getDailyBreakdown();
     }
 
-    public abstract String getChallengeType();
-
-    public HealthMetric getMetric() {
-        return metric;
+    public String getDailyBreakdown() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n📆 Challenge Breakdown for ").append(metric.getName()).append(":\n");
+        sb.append("Target: ").append(targetValue).append(" ").append(metric.getUnit()).append("\n");
+        sb.append("Start: ").append(startDate).append(" → End: ").append(endDate).append("\n");
+        sb.append("Max Streak: ").append(maxStreak).append("\n");
+        sb.append("Status: ").append(active ? "In Progress" : "Completed").append("\n");
+        return sb.toString();
     }
 
-    public double getTargetValue() {
-        return targetValue;
-    }
+    public HealthMetric getMetric() { return metric; }
+    public boolean isActive() { return active; }
+    public double getTargetValue() { return targetValue; }
+    public LocalDate getStartDate() { return startDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public int getCurrentStreak() { return currentStreak; }
+    public int getMaxStreak() { return maxStreak; }
 }
