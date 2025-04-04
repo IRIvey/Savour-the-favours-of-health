@@ -27,12 +27,13 @@ public class StorageManager {
         }
     }
 
-    public UserDataWrapper load() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
+    public static UserDataWrapper load() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("user_data.ser"))) {
             return (UserDataWrapper) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("⚠ No saved data found. Starting fresh.");
+        } catch (Exception e) {
+            System.out.println("⚠ Failed to load data: " + e.getMessage());
             return null;
         }
     }
+
 }

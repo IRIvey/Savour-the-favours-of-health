@@ -2,6 +2,8 @@ package system;
 
 import user.User;
 import challenge.ChallengeTracker;
+import storage.StorageManager;
+import storage.UserDataWrapper;
 
 import java.util.Scanner;
 
@@ -23,11 +25,24 @@ public class HealthTrackingSystem {
         return instance;
     }
 
-    public void start(User user, ChallengeTracker tracker) {
-        this.user = user;
-        this.tracker = tracker;
-        this.executor = new CommandExecutor(tracker);
-        this.menuDisplay = new MenuDisplay();
+    public void start() {
+
+        UserDataWrapper data = StorageManager.load();
+
+        if (data == null) {
+            System.out.print("Enter your name to begin: ");
+            String name = scanner.nextLine();
+            user = new User(name);
+            tracker = ChallengeTracker.getInstance();
+            System.out.println("✅ New profile created for " + name);
+        } else {
+            user = data.getUser();
+            ChallengeTracker.setInstance(data.getChallengeTracker());
+            tracker = ChallengeTracker.getInstance();
+        }
+
+        executor = new CommandExecutor(tracker);
+        menuDisplay = new MenuDisplay();
 
         while (true) {
             menuDisplay.showMenu();
@@ -43,4 +58,3 @@ public class HealthTrackingSystem {
         }
     }
 }
-
