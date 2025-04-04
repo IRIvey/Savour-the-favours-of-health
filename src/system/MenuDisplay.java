@@ -11,6 +11,7 @@ public class MenuDisplay {
         System.out.println("6. Track Steps");
         System.out.println("7. Set a goal");
         System.out.println("8. Manage Challenges");
+        System.out.println("9. Reset My Progress");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
     }

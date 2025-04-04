@@ -16,14 +16,14 @@ public class Main {
 
         if (data != null) {
             user = data.getUser();
-            tracker = data.getTracker();
+            tracker = data.getChallengeTracker();
         } else {
             user = new User("DefaultUser");
             tracker = ChallengeTracker.getInstance();
         }
 
         HealthTrackingSystem system = HealthTrackingSystem.getInstance();
-        system.start(user, tracker);
+        system.start();
 
 
         storage.save(user, tracker);

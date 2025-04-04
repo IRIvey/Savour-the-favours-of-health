@@ -7,6 +7,7 @@ import main.*;
 import factory.*;
 import tracker.*;
 import challenge.*;
+import reset.ResetManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,17 @@ public class CommandExecutor {
 
         if (choice == 8) {
             handleChallenge(user);
+            return;
+        }
+
+        if (choice == 9) {
+            System.out.print("⚠ This will delete ALL progress. Type 'yes' to confirm: ");
+            String confirm = scanner.nextLine();
+            if (confirm.equalsIgnoreCase("yes")) {
+                ResetManager.resetAll(user);
+            } else {
+                System.out.println("❌ Reset cancelled.");
+            }
             return;
         }
 

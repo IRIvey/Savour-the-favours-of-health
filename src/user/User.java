@@ -78,4 +78,10 @@ public class User implements Serializable {
     public String getName() {
         return name;
     }
+
+    public void clearAllData() {
+        healthHistory.clear();
+        goals.clear();
+    }
+
 }

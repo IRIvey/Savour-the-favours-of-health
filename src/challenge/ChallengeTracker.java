@@ -51,5 +51,14 @@ public class ChallengeTracker implements Serializable {
     public Map<String, Challenge> getAllChallenges() {
         return activeChallenges;
     }
+
+    public static void setInstance(ChallengeTracker tracker) {
+        instance = tracker;
+    }
+
+    public void clearAll() {
+        activeChallenges.clear();
+    }
+
 }
 

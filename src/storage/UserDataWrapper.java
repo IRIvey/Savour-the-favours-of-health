@@ -17,7 +17,7 @@ public class UserDataWrapper implements Serializable {
         return user;
     }
 
-    public ChallengeTracker getTracker() {
+    public ChallengeTracker getChallengeTracker() {
         return tracker;
     }
 }
