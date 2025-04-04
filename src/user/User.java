@@ -2,9 +2,6 @@ package user;
 
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
