@@ -7,7 +7,9 @@ import main.*;
 import factory.*;
 import java.time.LocalDateTime;
 
-public class HealthData {
+import java.io.Serializable;
+
+public class HealthData implements Serializable {
     private final HealthMetric metric;
     private final double value;
     private final LocalDateTime timestamp;

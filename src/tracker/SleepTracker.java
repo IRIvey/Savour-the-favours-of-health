@@ -3,10 +3,9 @@ package tracker;
 import user.*;
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
+import challenge.ChallengeTracker;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class SleepTracker implements Tracker {
     private final HealthMetric metric = new SleepDurationMetric();
@@ -24,33 +23,39 @@ public class SleepTracker implements Tracker {
         HealthData data = new HealthData(metric, duration, notes);
         user.addHealthData(data);
 
-        checkGoals(user);
+        ChallengeTracker.getInstance().recordValue(metric, duration);
+
+        Goal goal = user.getGoalForMetric(metric);
+        if (goal != null) {
+            goal.recordProgress(LocalDate.now(), duration);
+            System.out.println(goal.getProgressSummary());
+        }
 
         System.out.println("✅ Sleep logged: " + duration + " " + metric.getUnit());
+        checkGoals(user);
     }
 
     @Override
     public void displayStats(User user) {
         System.out.println("\n📊 Sleep History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
-            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() + " (" + data.getNotes() + ")");
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalSleep = user.getTotalRecordedValue(metric);
+        double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
-
         if (goal != null) {
-            goal.checkIfAchieved(totalSleep);
-            System.out.println("\n📊 Sleep Goal Progress:");
+            goal.checkIfAchieved(total);
+            System.out.println("\n📊 Goal Progress:");
             System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
-            System.out.println("➡ Recorded: " + totalSleep + " " + metric.getUnit());
+            System.out.println("➡ Recorded: " + total + " " + metric.getUnit());
             if (goal.isAchieved()) {
-                System.out.println("✅ Goal Achieved! 🎉 Well Rested!");
+                System.out.println("✅ Goal Achieved! 🎉");
             } else {
-                System.out.println("❌ Goal Not Achieved. Sleep " + (goal.getTargetValue() - totalSleep) + " more " + metric.getUnit() + ".");
+                System.out.println("❌ Goal Not Achieved. You need " + (goal.getTargetValue() - total) + " more " + metric.getUnit() + ".");
             }
         }
     }

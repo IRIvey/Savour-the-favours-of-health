@@ -1,25 +1,20 @@
 package system;
 
-import user.*;
-import metric.*;
-import goal.*;
-import main.*;
-import factory.*;
+import user.User;
+import challenge.ChallengeTracker;
+
 import java.util.Scanner;
 
 public class HealthTrackingSystem {
     private static HealthTrackingSystem instance;
-    private final CommandExecutor commandExecutor;
-    private final MenuDisplay menuDisplay;
-    private final Scanner scanner;
-    private final User currentUser;
+    private final Scanner scanner = new Scanner(System.in);
 
-    private HealthTrackingSystem() {
-        this.currentUser = new User("DefaultUser");
-        this.commandExecutor = new CommandExecutor();
-        this.menuDisplay = new MenuDisplay();
-        this.scanner = new Scanner(System.in);
-    }
+    private User user;
+    private ChallengeTracker tracker;
+    private CommandExecutor executor;
+    private MenuDisplay menuDisplay;
+
+    private HealthTrackingSystem() {}
 
     public static HealthTrackingSystem getInstance() {
         if (instance == null) {
@@ -28,18 +23,23 @@ public class HealthTrackingSystem {
         return instance;
     }
 
-    public void start() {
+    public void start(User user, ChallengeTracker tracker) {
+        this.user = user;
+        this.tracker = tracker;
+        this.executor = new CommandExecutor(tracker);
+        this.menuDisplay = new MenuDisplay();
+
         while (true) {
             menuDisplay.showMenu();
             int choice = scanner.nextInt();
             scanner.nextLine();
 
             if (choice == 0) {
-                System.out.println("Thank you for using the Health Tracking System!");
+                System.out.println("👋 Exiting Health Tracking System. Goodbye!");
                 break;
             }
 
-            commandExecutor.executeCommand(choice, currentUser);
+            executor.executeCommand(choice, user);
         }
     }
 }

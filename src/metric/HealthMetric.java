@@ -1,6 +1,8 @@
 package metric;
 
-public abstract class HealthMetric {
+import java.io.Serializable;
+
+public abstract class HealthMetric implements Serializable {
     private final String name;
     private final String unit;
 

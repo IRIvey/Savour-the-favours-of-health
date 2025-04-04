@@ -1,7 +1,8 @@
 package goal;
 
-public class WeeklyGoal implements GoalPeriod {
-    @Override
+import java.io.Serializable;
+
+public class WeeklyGoal implements GoalPeriod, Serializable {
     public String getPeriodName() {
         return "Weekly";
     }

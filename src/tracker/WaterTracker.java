@@ -3,10 +3,9 @@ package tracker;
 import user.*;
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
+import challenge.ChallengeTracker;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class WaterTracker implements Tracker {
     private final HealthMetric metric = new WaterIntakeMetric();
@@ -14,7 +13,7 @@ public class WaterTracker implements Tracker {
 
     @Override
     public void track(User user) {
-        System.out.print("Enter water intake (liters): ");
+        System.out.print("Enter water intake (ml): ");
         double intake = scanner.nextDouble();
         scanner.nextLine();
 
@@ -23,34 +22,39 @@ public class WaterTracker implements Tracker {
 
         HealthData data = new HealthData(metric, intake, notes);
         user.addHealthData(data);
+        ChallengeTracker.getInstance().recordValue(metric, intake);
 
-        checkGoals(user);
+        Goal goal = user.getGoalForMetric(metric);
+        if (goal != null) {
+            goal.recordProgress(LocalDate.now(), intake);
+            System.out.println(goal.getProgressSummary());
+        }
 
         System.out.println("✅ Water logged: " + intake + " " + metric.getUnit());
+        checkGoals(user);
     }
 
     @Override
     public void displayStats(User user) {
-        System.out.println("\n📊 Water Intake History:");
+        System.out.println("\n📊 Water History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
-            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() + " (" + data.getNotes() + ")");
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalIntake = user.getTotalRecordedValue(metric);
+        double total = user.getTotalRecordedValue(metric);
         Goal goal = user.getGoalForMetric(metric);
-
         if (goal != null) {
-            goal.checkIfAchieved(totalIntake);
-            System.out.println("\n📊 Water Goal Progress:");
+            goal.checkIfAchieved(total);
+            System.out.println("\n📊 Goal Progress:");
             System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
-            System.out.println("➡ Recorded: " + totalIntake + " " + metric.getUnit());
+            System.out.println("➡ Recorded: " + total + " " + metric.getUnit());
             if (goal.isAchieved()) {
-                System.out.println("✅ Goal Achieved! 🎉 Keep Hydrated!");
+                System.out.println("✅ Goal Achieved! 🎉");
             } else {
-                System.out.println("❌ Goal Not Achieved. Drink " + (goal.getTargetValue() - totalIntake) + " more " + metric.getUnit() + ".");
+                System.out.println("❌ Goal Not Achieved. You need " + (goal.getTargetValue() - total) + " more " + metric.getUnit() + ".");
             }
         }
     }
