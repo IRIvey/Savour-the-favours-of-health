@@ -26,18 +26,18 @@ public class HealthTrackingSystem {
     }
 
     public void start() {
-
-        UserDataWrapper data = StorageManager.load();
+        StorageManager storage = StorageManager.getInstance();
+        UserDataWrapper data = storage.load();
 
         if (data == null) {
             System.out.print("Enter your name to begin: ");
             String name = scanner.nextLine();
             user = new User(name);
-            tracker = ChallengeTracker.getInstance();
+            tracker = ChallengeTracker.getInstance(); // fresh singleton
             System.out.println("✅ New profile created for " + name);
         } else {
             user = data.getUser();
-            ChallengeTracker.setInstance(data.getChallengeTracker());
+            ChallengeTracker.setInstance(data.getChallengeTracker()); // ✅ Crucial fix
             tracker = ChallengeTracker.getInstance();
         }
 
@@ -51,6 +51,7 @@ public class HealthTrackingSystem {
 
             if (choice == 0) {
                 System.out.println("👋 Exiting Health Tracking System. Goodbye!");
+                storage.save(user, tracker);
                 break;
             }
 

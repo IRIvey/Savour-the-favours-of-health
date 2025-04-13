@@ -17,6 +17,7 @@ public class CommandExecutor {
     private final Map<Integer, HealthMetric> metricMap = new HashMap<>();
     private final Scanner scanner = new Scanner(System.in);
     private final ChallengeTracker tracker;
+    private final MenuDisplay menuDisplay = new MenuDisplay();
 
     public CommandExecutor(ChallengeTracker tracker) {
         this.tracker = tracker;
@@ -29,46 +30,47 @@ public class CommandExecutor {
     }
 
     public void executeCommand(int choice, User user) {
-        if (choice == 7) {
-            setGoal(user);
-            return;
-        }
-
-        if (choice == 8) {
-            handleChallenge(user);
-            return;
-        }
-
-        if (choice == 9) {
-            System.out.print("⚠ This will delete ALL progress. Type 'yes' to confirm: ");
-            String confirm = scanner.nextLine();
-            if (confirm.equalsIgnoreCase("yes")) {
-                ResetManager.resetAll(user);
-            } else {
-                System.out.println("❌ Reset cancelled.");
+        switch (choice) {
+            case 1 -> handleTracking(user);
+            case 2 -> setGoal(user);
+            case 3 -> handleChallenge(user);
+            case 4 -> {
+                System.out.print("⚠ This will delete ALL progress. Type 'yes' to confirm: ");
+                String confirm = scanner.nextLine();
+                if (confirm.equalsIgnoreCase("yes")) {
+                    ResetManager.resetAll(user);
+                } else {
+                    menuDisplay.showError("Reset cancelled.");
+                }
             }
-            return;
+            case 0 -> System.out.println("👋 Exiting Health Tracking System. Goodbye!");
+            default -> menuDisplay.showError("Invalid main menu choice: " + choice);
         }
+    }
 
-        HealthMetric metric = metricMap.get(choice);
+    private void handleTracking(User user) {
+        menuDisplay.showTrackingOptions();
+        int trackChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        HealthMetric metric = metricMap.get(trackChoice);
         if (metric != null) {
             Tracker tracker = trackerFactory.createTracker(metric);
 
+            menuDisplay.showSection("Tracking: " + metric.getName());
             System.out.print("Enter today's value for " + metric.getName() + ": ");
             double value = scanner.nextDouble();
-            scanner.nextLine(); // consume leftover newline
-
+            scanner.nextLine();
             System.out.print("Any notes? (optional): ");
             String notes = scanner.nextLine();
-
             tracker.track(user, value, notes);
         } else {
-            System.out.println("Invalid command choice: " + choice);
+            menuDisplay.showError("Invalid tracking option.");
         }
     }
 
     private void setGoal(User user) {
-        System.out.println("=== Set a Goal ===");
+        menuDisplay.showSection("Set a Goal");
         System.out.println("Choose a metric to set a goal:");
         for (Map.Entry<Integer, HealthMetric> entry : metricMap.entrySet()) {
             System.out.println(entry.getKey() + ". " + entry.getValue().getName());
@@ -80,7 +82,7 @@ public class CommandExecutor {
 
         HealthMetric selectedMetric = metricMap.get(choice);
         if (selectedMetric == null) {
-            System.out.println("Invalid metric choice.");
+            menuDisplay.showError("Invalid metric choice.");
             return;
         }
 
@@ -98,18 +100,18 @@ public class CommandExecutor {
             case 2 -> period = new WeeklyGoal();
             case 3 -> period = new MonthlyGoal();
             default -> {
-                System.out.println("Invalid goal period.");
+                menuDisplay.showError("Invalid goal period.");
                 return;
             }
         }
 
         Goal newGoal = new Goal(selectedMetric, targetValue, period);
         user.addGoal(newGoal);
-        System.out.println("✅ Goal set for " + selectedMetric.getName() + " (" + period.getPeriodName() + ")!");
+        menuDisplay.showSuccess("Goal set for " + selectedMetric.getName() + " (" + period.getPeriodName() + ")!");
     }
 
     private void handleChallenge(User user) {
-        System.out.println("=== Challenge Menu ===");
+        menuDisplay.showSection("Challenge Menu");
         System.out.println("1. Start a new Challenge");
         System.out.println("2. Record today's progress for a Challenge");
         System.out.println("3. End a Challenge");
@@ -129,7 +131,7 @@ public class CommandExecutor {
                 scanner.nextLine();
                 HealthMetric selectedMetric = metricMap.get(metricChoice);
                 if (selectedMetric == null) {
-                    System.out.println("Invalid metric choice.");
+                    menuDisplay.showError("Invalid metric choice.");
                     return;
                 }
                 System.out.print("Enter target value for the challenge: ");
@@ -142,7 +144,7 @@ public class CommandExecutor {
                     Challenge challenge = ChallengeFactory.createChallenge(selectedMetric, targetValue, periodChoice);
                     tracker.addChallenge(challenge);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid challenge period choice.");
+                    menuDisplay.showError("Invalid challenge period choice.");
                 }
             }
             case 2 -> {
@@ -155,7 +157,7 @@ public class CommandExecutor {
                 scanner.nextLine();
                 HealthMetric progressMetric = metricMap.get(metricChoice2);
                 if (progressMetric == null) {
-                    System.out.println("Invalid metric choice.");
+                    menuDisplay.showError("Invalid metric choice.");
                     return;
                 }
                 System.out.print("Enter today's value for the metric: ");
@@ -173,13 +175,13 @@ public class CommandExecutor {
                 scanner.nextLine();
                 HealthMetric endMetric = metricMap.get(metricChoice3);
                 if (endMetric == null) {
-                    System.out.println("Invalid metric choice.");
+                    menuDisplay.showError("Invalid metric choice.");
                     return;
                 }
                 tracker.endChallenge(endMetric);
             }
             case 4 -> tracker.listActiveChallenges();
-            default -> System.out.println("Invalid challenge option.");
+            default -> menuDisplay.showError("Invalid challenge option.");
         }
     }
 }

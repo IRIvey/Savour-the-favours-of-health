@@ -20,6 +20,8 @@ public class ResetManager {
 
         StorageManager sm = StorageManager.getInstance();
         sm.save(user, ChallengeTracker.getInstance());
-        System.out.println("✅ All data and challenges have been reset.");
+
+        System.out.println("✅ All data and challenges have been reset and saved.");
     }
 }
+
