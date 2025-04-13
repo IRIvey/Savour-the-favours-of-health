@@ -17,6 +17,10 @@ public class WeightTracker implements Tracker {
 
     @Override
     public void track(User user, double value, String notes) {
+        if (value <= 0 || value > 400) {
+            System.out.println("❌ Error: Weight must be between 0 and 400 kg.");
+            return;
+        }
         HealthData data = new HealthData(metric, value, notes);
         user.addHealthData(data);
         challengeTracker.recordValue(metric, value);

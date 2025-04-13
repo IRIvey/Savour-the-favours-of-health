@@ -17,6 +17,10 @@ public class StepTracker implements Tracker {
 
     @Override
     public void track(User user, double value, String notes) {
+        if (value <= 0 || value > 100000) {
+            System.out.println("❌ Error: Steps must be between 0 and 100,000.");
+            return;
+        }
         HealthData data = new HealthData(metric, value, notes);
         user.addHealthData(data);
         challengeTracker.recordValue(metric, value);

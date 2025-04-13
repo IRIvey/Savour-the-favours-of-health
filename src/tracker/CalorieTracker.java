@@ -17,6 +17,10 @@ public class CalorieTracker implements Tracker {
 
     @Override
     public void track(User user, double value, String notes) {
+        if (value <= 0 || value > 10000) {
+            System.out.println("❌ Error: Calorie intake must be between 0 and 10,000 kcal.");
+            return;
+        }
         HealthData data = new HealthData(metric, value, notes);
         user.addHealthData(data);
         challengeTracker.recordValue(metric, value);
