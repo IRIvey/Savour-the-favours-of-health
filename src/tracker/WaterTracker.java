@@ -1,37 +1,28 @@
 package tracker;
 
-import user.*;
+import user.HealthData;
+import user.User;
 import metric.*;
-import goal.*;
+import goal.GoalProcessor;
 import challenge.ChallengeTracker;
-import java.util.Scanner;
-import java.time.LocalDate;
 
 public class WaterTracker implements Tracker {
     private final HealthMetric metric = new WaterIntakeMetric();
-    private final Scanner scanner = new Scanner(System.in);
+    private final ChallengeTracker challengeTracker;
+    private final GoalProcessor goalProcessor;
+
+    public WaterTracker(ChallengeTracker challengeTracker, GoalProcessor goalProcessor) {
+        this.challengeTracker = challengeTracker;
+        this.goalProcessor = goalProcessor;
+    }
 
     @Override
-    public void track(User user) {
-        System.out.print("Enter water intake (ml): ");
-        double intake = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("Any notes? (optional): ");
-        String notes = scanner.nextLine();
-
-        HealthData data = new HealthData(metric, intake, notes);
+    public void track(User user, double value, String notes) {
+        HealthData data = new HealthData(metric, value, notes);
         user.addHealthData(data);
-        ChallengeTracker.getInstance().recordValue(metric, intake);
-
-        Goal goal = user.getGoalForMetric(metric);
-        if (goal != null) {
-            goal.recordProgress(LocalDate.now(), intake);
-            System.out.println(goal.getProgressSummary());
-        }
-
-        System.out.println("✅ Water logged: " + intake + " " + metric.getUnit());
-        checkGoals(user);
+        challengeTracker.recordValue(metric, value);
+        goalProcessor.process(user, metric, value);
+        System.out.println("✅ Water logged: " + value + " " + metric.getUnit());
     }
 
     @Override
@@ -44,20 +35,7 @@ public class WaterTracker implements Tracker {
 
     @Override
     public void checkGoals(User user) {
-        double total = user.getTotalRecordedValue(metric);
-        Goal goal = user.getGoalForMetric(metric);
-        if (goal != null) {
-            goal.checkIfAchieved(total);
-            System.out.println("\n📊 Goal Progress:");
-            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
-            System.out.println("➡ Recorded: " + total + " " + metric.getUnit());
-            if (goal.isAchieved()) {
-                System.out.println("✅ Goal Achieved! 🎉");
-            } else {
-                System.out.println("❌ Goal Not Achieved. You need " + (goal.getTargetValue() - total) + " more " + metric.getUnit() + ".");
-            }
-        }
+        goalProcessor.process(user, metric, user.getTotalRecordedValue(metric));
     }
 }
-
 

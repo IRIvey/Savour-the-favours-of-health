@@ -1,12 +1,11 @@
 package system;
 
-import user.*;
+import user.User;
 import metric.*;
 import goal.*;
-import main.*;
-import factory.*;
-import tracker.*;
 import challenge.*;
+import factory.TrackerFactory;
+import tracker.Tracker;
 import reset.ResetManager;
 
 import java.util.HashMap;
@@ -52,10 +51,17 @@ public class CommandExecutor {
         }
 
         HealthMetric metric = metricMap.get(choice);
-
         if (metric != null) {
             Tracker tracker = trackerFactory.createTracker(metric);
-            tracker.track(user);
+
+            System.out.print("Enter today's value for " + metric.getName() + ": ");
+            double value = scanner.nextDouble();
+            scanner.nextLine(); // consume leftover newline
+
+            System.out.print("Any notes? (optional): ");
+            String notes = scanner.nextLine();
+
+            tracker.track(user, value, notes);
         } else {
             System.out.println("Invalid command choice: " + choice);
         }
