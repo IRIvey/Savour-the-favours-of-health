@@ -3,64 +3,41 @@ package tracker;
 import user.*;
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
-import java.util.Scanner;
+import challenge.ChallengeTracker;
 
 public class CalorieTracker implements Tracker {
     private final HealthMetric metric = new CalorieMetric();
-    private final Scanner scanner = new Scanner(System.in);
+    private final ChallengeTracker challengeTracker;
+    private final GoalProcessor goalProcessor;
+
+    public CalorieTracker(ChallengeTracker challengeTracker, GoalProcessor goalProcessor) {
+        this.challengeTracker = challengeTracker;
+        this.goalProcessor = goalProcessor;
+    }
 
     @Override
-    public void track(User user) {
-        System.out.print("Enter calories consumed: ");
-        double calories = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("Any notes? (optional): ");
-        String notes = scanner.nextLine();
-
-        HealthData data = new HealthData(metric, calories, notes);
+    public void track(User user, double value, String notes) {
+        if (value <= 0 || value > 10000) {
+            System.out.println("❌ Error: Calorie intake must be between 0 and 10,000 kcal.");
+            return;
+        }
+        HealthData data = new HealthData(metric, value, notes);
         user.addHealthData(data);
-
-        System.out.println("✅ Calories logged: " + calories + " " + metric.getUnit());
-
-        checkGoals(user);
+        challengeTracker.recordValue(metric, value);
+        goalProcessor.process(user, metric, value);
+        System.out.println("✅ Calories logged: " + value + " " + metric.getUnit());
     }
 
     @Override
     public void displayStats(User user) {
-        System.out.println("\n📊 Calorie Intake History:");
-        for (HealthData data : user.getHealthHistory()) {
-            if (data.getMetric() instanceof CalorieMetric) {
-                System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() +
-                        (data.getNotes().isEmpty() ? "" : " (Notes: " + data.getNotes() + ")"));
-            }
+        System.out.println("\n📊 Calorie History:");
+        for (HealthData data : user.getHistoryForMetric(metric)) {
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalCalories = user.getTotalRecordedValue(metric);
-        Goal goal = user.getGoalForMetric(metric);
-
-        if (goal == null) {
-            System.out.println("⚠ No goal set for Calories.");
-            return;
-        }
-
-        goal.checkIfAchieved(totalCalories);
-
-        System.out.println("\n📊 Calorie Goal Progress:");
-        System.out.println("➡ Goal: " + goal.getTargetValue() + " kcal");
-        System.out.println("➡ Recorded: " + totalCalories + " kcal");
-
-        if (goal.isAchieved()) {
-            System.out.println("✅ Goal Achieved! 🎉 Well balanced!");
-        } else {
-            double difference = goal.getTargetValue() - totalCalories;
-            System.out.println("❌ Goal Not Achieved. You need " + difference + " more kcal.");
-        }
+        goalProcessor.process(user, metric, user.getTotalRecordedValue(metric));
     }
 }

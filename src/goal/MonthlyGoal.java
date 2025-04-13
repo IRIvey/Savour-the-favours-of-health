@@ -1,7 +1,8 @@
 package goal;
 
-public class MonthlyGoal implements GoalPeriod {
-    @Override
+import java.io.Serializable;
+
+public class MonthlyGoal implements GoalPeriod, Serializable {
     public String getPeriodName() {
         return "Monthly";
     }

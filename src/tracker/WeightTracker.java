@@ -3,55 +3,41 @@ package tracker;
 import user.*;
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
-import java.util.Scanner;
+import challenge.ChallengeTracker;
 
 public class WeightTracker implements Tracker {
     private final HealthMetric metric = new WeightMetric();
-    private final Scanner scanner = new Scanner(System.in);
+    private final ChallengeTracker challengeTracker;
+    private final GoalProcessor goalProcessor;
+
+    public WeightTracker(ChallengeTracker challengeTracker, GoalProcessor goalProcessor) {
+        this.challengeTracker = challengeTracker;
+        this.goalProcessor = goalProcessor;
+    }
 
     @Override
-    public void track(User user) {
-        System.out.print("Enter your weight (kg): ");
-        double weight = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("Any notes? (optional): ");
-        String notes = scanner.nextLine();
-
-        HealthData data = new HealthData(metric, weight, notes);
+    public void track(User user, double value, String notes) {
+        if (value <= 0 || value > 400) {
+            System.out.println("❌ Error: Weight must be between 0 and 400 kg.");
+            return;
+        }
+        HealthData data = new HealthData(metric, value, notes);
         user.addHealthData(data);
-
-        checkGoals(user);
-
-        System.out.println("✅ Weight logged: " + weight + " " + metric.getUnit());
+        challengeTracker.recordValue(metric, value);
+        goalProcessor.process(user, metric, value);
+        System.out.println("✅ Weight logged: " + value + " " + metric.getUnit());
     }
 
     @Override
     public void displayStats(User user) {
         System.out.println("\n📊 Weight History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
-            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() + " (" + data.getNotes() + ")");
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
     }
 
     @Override
     public void checkGoals(User user) {
-        double latestWeight = user.getTotalRecordedValue(metric);
-        Goal goal = user.getGoalForMetric(metric);
-
-        if (goal != null) {
-            goal.checkIfAchieved(latestWeight);
-            System.out.println("\n📊 Weight Goal Progress:");
-            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
-            System.out.println("➡ Recorded: " + latestWeight + " " + metric.getUnit());
-            if (goal.isAchieved()) {
-                System.out.println("✅ Goal Achieved! 🎉 Keep maintaining!");
-            } else {
-                System.out.println("❌ Goal Not Achieved. Adjust by " + (goal.getTargetValue() - latestWeight) + " kg.");
-            }
-        }
+        goalProcessor.process(user, metric, user.getTotalRecordedValue(metric));
     }
 }

@@ -3,58 +3,43 @@ package tracker;
 import user.*;
 import metric.*;
 import goal.*;
-import system.*;
-import main.*;
-import factory.*;
-import java.util.Scanner;
+import challenge.ChallengeTracker;
 
 public class ExerciseTracker implements Tracker {
     private final HealthMetric metric = new ExerciseDurationMetric();
-    private final Scanner scanner = new Scanner(System.in);
+    private final ChallengeTracker challengeTracker;
+    private final GoalProcessor goalProcessor;
+
+    public ExerciseTracker(ChallengeTracker challengeTracker, GoalProcessor goalProcessor) {
+        this.challengeTracker = challengeTracker;
+        this.goalProcessor = goalProcessor;
+    }
 
     @Override
-    public void track(User user) {
-        System.out.print("Enter exercise duration (minutes): ");
-        double duration = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("Any notes? (optional): ");
-        String notes = scanner.nextLine();
-
-        HealthData data = new HealthData(metric, duration, notes);
+    public void track(User user, double value, String notes) {
+            if (value <= 0 || value > 8) {
+                System.out.println("❌ Error: Exercise duration must be between 0 and 8 hours.");
+                return;
+            }
+        HealthData data = new HealthData(metric, value, notes);
         user.addHealthData(data);
-
-        checkGoals(user);
-
-        System.out.println("✅ Exercise logged: " + duration + " " + metric.getUnit());
+        challengeTracker.recordValue(metric, value);
+        goalProcessor.process(user, metric, value);
+        System.out.println("✅ Exercise logged: " + value + " " + metric.getUnit());
     }
 
     @Override
     public void displayStats(User user) {
         System.out.println("\n📊 Exercise History:");
         for (HealthData data : user.getHistoryForMetric(metric)) {
-            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit() + " (" + data.getNotes() + ")");
+            System.out.println(data.getTimestamp() + " - " + data.getValue() + " " + metric.getUnit());
         }
     }
 
     @Override
     public void checkGoals(User user) {
-        double totalExercise = user.getTotalRecordedValue(metric);
-        Goal goal = user.getGoalForMetric(metric);
-
-        if (goal != null) {
-            goal.checkIfAchieved(totalExercise);
-            System.out.println("\n📊 Exercise Goal Progress:");
-            System.out.println("➡ Goal: " + goal.getTargetValue() + " " + metric.getUnit());
-            System.out.println("➡ Recorded: " + totalExercise + " " + metric.getUnit());
-            if (goal.isAchieved()) {
-                System.out.println("✅ Goal Achieved! 🎉 Keep it up!");
-            } else {
-                System.out.println("❌ Goal Not Achieved. Exercise " + (goal.getTargetValue() - totalExercise) + " more " + metric.getUnit() + ".");
-            }
-        }
+        goalProcessor.process(user, metric, user.getTotalRecordedValue(metric));
     }
 }
-
 
 
